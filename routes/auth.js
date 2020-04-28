@@ -1,15 +1,15 @@
+
 const router = require('express').Router();
 const User = require('../model/User')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const {registerValidation,loginValidation} = require('../validation')
-
+const mongoose = require("mongoose");
 
 
 //Register
 
 router.post('/register', async (req, res) => {
-    
     
     //LETS VALIDA TE THE DATA BEFORE WE A USER
     const {error} = registerValidation(req.body)

@@ -2,6 +2,10 @@
 # Created by https://www.gitignore.io/api/node,visualstudio
 # Edit at https://www.gitignore.io/?templates=node,visualstudio
 
+##Docker##
+# docker-compose.yml
+# Dockerfile
+
 ### Node ###
 # Logs
 logs

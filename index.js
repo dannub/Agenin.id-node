@@ -25,6 +25,6 @@ app.use(express.json());
 app.use('/api/user',authRoute);
 app.use('/api/posts',postRoute);
 
-app.listen(3000, () => {
+app.listen(8000, () => {
     console.log(`Server Up and running`);
 });
