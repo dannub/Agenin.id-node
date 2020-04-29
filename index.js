@@ -6,8 +6,8 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 //Import Routes
-const authRoute = require('./routes/auth');
-const postRoute = require('./routes/posts')
+const authRoute = require('./routes/Auth/auth');
+const postRoute = require('./routes/Post/posts')
 
 dotenv.config();
 
