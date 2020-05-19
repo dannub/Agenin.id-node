@@ -1,0 +1,27 @@
+version: "3.7"
+
+services: 
+    mongo:
+        container_name: mongo
+        image: mongo
+        ports: 
+            - 8080:27017
+        volumes:
+            - "./data:/data/db"
+        networks: 
+            - agenin_networks
+    agenin-node:
+        container_name: agenin-node
+        image: agenin-node
+        ports:
+            - 8000:8000
+        depends_on: 
+            - mongo
+        environment: 
+            - DB_CONNECT= mongodb://admin:Agenin12345@mongo/admin
+            - TOKEN_SECRET= Adenin.id
+        networks: 
+            - agenin_networks
+networks: 
+    agenin_networks:
+        name: agenin_networks
