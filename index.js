@@ -35,7 +35,7 @@ app.use(cors())
 app.use('/categories/',express.static('public/uploads/categories'));
 app.use('/products/',express.static('public/uploads/products'));
 app.use('/item/',express.static('public/uploads/item'));
-app.use('/notification/',express.static('public/uploads/notification'));
+app.use('/notifications/',express.static('public/uploads/notifications'));
 app.use('/topdeals/',express.static('public/uploads/topdeals'));
 app.use('/user/',express.static('public/uploads/user'));
 app.use('/nota/',express.static('public/uploads/bukti/nota'));
