@@ -51,6 +51,6 @@ app.use('/api/video',videoRoute);
 app.use('/api/categories',categoryRoute);
 app.use('/api/products',productRoute);
 
-app.listen(8000, () => {
+app.listen(process.env.PORT || 8000, () => {
     console.log(`Server Up and running`);
 });
