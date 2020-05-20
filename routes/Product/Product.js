@@ -38,10 +38,13 @@ router.get('/',async(req,res)=>{
 
     const resPerPage = parseInt(req.query.limit); // results per page
     const page = parseInt(req.query.page || 1); 
+    var numOfProducts,numOfpage  
+  
    
-    if(req.body.search!=undefined || req.body.search!=""){
+    if(req.body.search!=undefined && req.body.search!=""){
         try {
-         
+            
+            
             const product =await Products.find(
             {
                 $or:
@@ -56,19 +59,51 @@ router.get('/',async(req,res)=>{
             }).skip((resPerPage * page) - resPerPage)
             .limit(resPerPage)
 
-            res.status(200).json(product)
+
+
+            numOfProducts = await Products.find(
+                {
+                    $or:
+                        [ 
+                            { title_product : new RegExp(req.body.search ,'i')},
+                            {category : new RegExp(req.body.search ,'i')},
+                            {sent_from : new RegExp(req.body.search ,'i')},
+                            {decription : new RegExp(req.body.search ,'i')},
+                            {tags : new RegExp(req.body.search ,'i')},
+                        ]
+                    
+                }).countDocuments()
+
+             numOfpage = Math.ceil(numOfProducts / resPerPage) //jumlah halaman
+            
+        
+            res.status(200).json({
+                products : product,
+                page : numOfpage
+            })
         } catch (error) {
             res.status(400).json({message: error})
         }   
     }else{
          try {
-
-           
-
+            
+            
             //All Product
-            const products = await Products.find() .skip((resPerPage * page) - resPerPage)
+            const product = await Products.find() .skip((resPerPage * page) - resPerPage)
             .limit(resPerPage);
-            res.status(200).json(products)
+            numOfProducts = await Products.find().countDocuments()
+           
+            //console.log(numOfProducts)
+            numOfpage = Math.ceil(numOfProducts / resPerPage) //jumlah halaman
+            
+            
+        
+            res.status(200).json({
+                products : product,
+                page : numOfpage,
+                currentPage: page, 
+                totalProducts: numOfProducts
+            })
     
         } catch (error) {
             res.status(400).json({message: error})
