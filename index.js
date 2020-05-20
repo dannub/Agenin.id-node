@@ -40,7 +40,7 @@ app.use('/topdeals/',express.static('public/uploads/topdeals'));
 app.use('/user/',express.static('public/uploads/user'));
 app.use('/nota/',express.static('public/uploads/bukti/nota'));
 app.use('/daftar/',express.static('public/uploads/bukti/daftar'));
-//app.use('/imgVideo/',express.static('public/uploads/video'));
+app.use('/video/',express.static('public/uploads/video'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
