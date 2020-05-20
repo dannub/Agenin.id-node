@@ -144,8 +144,9 @@ router.get('/search/',async(req,res)=>{
 //SUBMITS A Product
 router.post('/create',upload.any(),verify,async(req,res)=>{
 
-    
+  
     const product = new Products({
+        
         title_product: toTitle(req.body.title_product),
         image: req.files,
         category: req.body.category,

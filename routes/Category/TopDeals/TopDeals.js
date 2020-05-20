@@ -148,7 +148,7 @@ router.get('/',async(req,res)=>{
                               "_id": "$$g._id",
                               "title_product":"$$g.title_product",
                               "price":"$$g.price",
-                              "image": {'$arrayElemAt': ['$$g.image.path', 0] } 
+                              "image": {'$arrayElemAt': ['$$g.image.filename', 0] } 
                             }
                           }
                         } ]},
@@ -162,7 +162,7 @@ router.get('/',async(req,res)=>{
                                 "title_product":"$$h.title_product",
                                 "price":"$$h.price",
                                 "cutted_price":"$$h.cutted_price",
-                                "image": {'$arrayElemAt': ['$$h.image.path', 0] } 
+                                "image":{'$arrayElemAt': ['$$h.image.filename', 0] } 
                               }
                             }
                          } ]}
