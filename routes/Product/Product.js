@@ -36,16 +36,75 @@ const upload = multer({
 //GET ALL Product
 router.get('/',async(req,res)=>{
 
-    try {
-        //All Product
-        const products = await Products.find();
-        res.status(200).json(products)
+    const resPerPage = parseInt(req.query.limit); // results per page
+    const page = parseInt(req.query.page || 1); 
    
-    } catch (error) {
-        res.status(400).json({message: error})
+    if(req.body.search!=undefined || req.body.search!=""){
+        try {
+         
+            const product =await Products.find(
+            {
+                $or:
+                    [ 
+                        { title_product : new RegExp(req.body.search ,'i')},
+                        {category : new RegExp(req.body.search ,'i')},
+                        {sent_from : new RegExp(req.body.search ,'i')},
+                        {decription : new RegExp(req.body.search ,'i')},
+                        {tags : new RegExp(req.body.search ,'i')},
+                    ]
+                
+            }).skip((resPerPage * page) - resPerPage)
+            .limit(resPerPage)
+
+            res.status(200).json(product)
+        } catch (error) {
+            res.status(400).json({message: error})
+        }   
+    }else{
+         try {
+
+           
+
+            //All Product
+            const products = await Products.find() .skip((resPerPage * page) - resPerPage)
+            .limit(resPerPage);
+            res.status(200).json(products)
+    
+        } catch (error) {
+            res.status(400).json({message: error})
+        }
     }
 
 })
+
+
+//GET ALL Product
+router.get('/search/',async(req,res)=>{
+
+   
+  
+        try {
+         
+            const product =await Products.find(
+            {
+                $or:
+                    [ 
+                        { title_product : new RegExp(req.body.Search ,'i')},
+                        {category : new RegExp(req.body.Search ,'i')},
+                        {sent_from : new RegExp(req.body.Search ,'i')},
+                        {decription : new RegExp(req.body.Search ,'i')},
+                        {tags : new RegExp(req.body.Search ,'i')},
+                    ]
+                
+            })
+
+            res.status(200).json(product)
+        } catch (error) {
+            res.status(400).json({message: error})
+        }   
+})
+
+
 
 //SUBMITS A Product
 router.post('/create',upload.any(),verify,async(req,res)=>{
@@ -97,7 +156,7 @@ router.post('/create',upload.any(),verify,async(req,res)=>{
 })
 
 //SPECIFIC PRODUCT
-router.get('/:productId',async(req,res)=>{
+router.get('/id/:productId',async(req,res)=>{
 
     try {
         const product =await Products.findById(req.params.productId)
@@ -107,6 +166,8 @@ router.get('/:productId',async(req,res)=>{
         res.status(400).json({message: error})
     }
 })
+
+
 
 //DeleteProduct
 router.delete('/delete/:productId',verify,async(req,res)=>{

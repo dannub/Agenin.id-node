@@ -112,9 +112,10 @@ router.post('/register',upload_bukti.fields([
 
 //Login
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res,next) => {
     //LETS VALIDA TE THE DATA BEFORE WE A USER
     var userCek = {email:req.body.email,password:req.body.password}
+    console.log(req.body.email)
    
     const {error} = loginValidation(userCek)
     if(error) return res.status(400).send(error.details[0].message);
@@ -141,7 +142,17 @@ router.post('/login', async (req, res) => {
     }
     res.status(200).header('auth-token',token).send(user)
 
+    next()
+
 });
+
+router.get('/logout',verify,async(req,res, next)=>{
+    delete req.headers['auth-token'];
+    //delete req.header('auth-token'); // should be lowercase
+    res.status(200).json("Log Out Sukses")
+ // next();
+   
+  });
 
 
 //GET ALL User by date sort status

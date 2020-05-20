@@ -38,7 +38,14 @@ router.get('/',async(req,res)=>{
 
     try {
         //All Category
-        const categories = await Category.find();
+        const categories = await Category.find({},
+            {
+                _id:1,
+                category_name:1,
+                icon: 1,
+                status:1,
+                slug: 1,
+            });
         res.status(200).json(categories)
    
     } catch (error) {
@@ -132,6 +139,41 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
                     category_name: req.body.category_name,
                     status : req.body.status,
                     icon: req.file.path,
+                }}
+            )
+            res.status(200).json(updatedCategory)
+          } catch(err) {
+            console.error(err)
+          }
+
+       
+    } catch (error) {
+        res.status(400).json({message: error})
+    }
+})
+
+//Update a category
+router.patch('/update-status/:categoryId',upload.single('icon'),verify,async(req,res)=>{
+
+    try {
+
+
+        const category =await Category.findById(req.params.categoryId)
+        try {
+            // if (category[0].icon != ""){
+            //     fs.unlinkSync('./'+category.icon)
+            // }
+            var status
+            if(category.status){
+                status = false
+            }else{
+                status = true
+            }
+            //file removed
+            const updatedCategory =await Category.updateOne(
+                {_id: req.params.categoryId},
+                {$set:{   
+                    status : status
                 }}
             )
             res.status(200).json(updatedCategory)

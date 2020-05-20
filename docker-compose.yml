@@ -12,7 +12,7 @@ services:
             - agenin_networks
     agenin-node:
         container_name: agenin-node
-        image: agenin-node
+        image: agenin-node:1.0
         ports:
             - 8000:8000
         depends_on: 
@@ -20,6 +20,7 @@ services:
         environment: 
             - DB_CONNECT= mongodb://admin:Agenin12345@mongo/admin
             - TOKEN_SECRET= Adenin.id
+            - FIREBASE= https://agenin-d96b3.firebaseio.com
         networks: 
             - agenin_networks
 networks: 
