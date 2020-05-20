@@ -146,7 +146,7 @@ router.post('/create',upload.any(),verify,async(req,res)=>{
 
     var imageArray = []
     req.files.forEach(function(image) {
-         imageArray.push("pruduct/"+image.filename)
+         imageArray.push("products/"+image.filename)
         /* etc etc */ })
     const product = new Products({
 
@@ -254,7 +254,7 @@ router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
           
             var imageArray = []
             req.files.forEach(function(image) {
-                 imageArray.push(image.filename)
+                 imageArray.push("products/"+image.filename)
                 /* etc etc */ })
             //file removed
             const updatedProduct =await Products.updateOne(
