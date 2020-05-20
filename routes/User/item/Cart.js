@@ -39,7 +39,7 @@ router.get('/',verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,berat:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,berat:1 } }
                         ],
                         as: "product"
                     }
@@ -119,7 +119,7 @@ router.get('/count',verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },price:1,cutted_price:1,satuan:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,cutted_price:1,satuan:1 } }
                         ],
                         as: "product"
                     }
@@ -273,7 +273,7 @@ router.get('/:cartId', verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },in_stock:1,price:1,cutted_price:1,satuan:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },in_stock:1,price:1,cutted_price:1,satuan:1 } }
                         ],
                         as: "product"
                     }
@@ -409,7 +409,7 @@ router.patch('/update/:productId',verify,async(req,res)=>{
                                     
                                    }
                                 },
-                                { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },in_stock:1,price:1,cutted_price:1,satuan:1,berat:1 } }
+                                { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },in_stock:1,price:1,cutted_price:1,satuan:1,berat:1 } }
                             ],
                             as: "product"
                         }

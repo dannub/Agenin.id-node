@@ -177,7 +177,7 @@ router.post('/create',upload.fields([
 
     var  nota= new Nota({
         //send
-        bukti: req.files.bukti[0].path,
+        bukti: "nota/"+req.files.bukti[0].filename,
         atas_nama: req.body.atas_nama,
         bank: req.body.bank,
         tgl_transfer: req.body.tgl_transfer,
@@ -337,7 +337,7 @@ router.delete('/delete/:notaId',verify,async(req,res,next)=>{
 
 
 
-// //Update a cart
+// //Update status
 router.patch('/update/:notaId',verify,async(req,res)=>{
 
     const {error} = isHex(req.params.notaId)

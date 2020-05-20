@@ -148,7 +148,7 @@ router.get('/',async(req,res)=>{
                               "_id": "$$g._id",
                               "title_product":"$$g.title_product",
                               "price":"$$g.price",
-                              "image": {'$arrayElemAt': ['$$g.image.filename', 0] } 
+                              "image": {'$arrayElemAt': ['$$g.image', 0] } 
                             }
                           }
                         } ]},
@@ -162,7 +162,7 @@ router.get('/',async(req,res)=>{
                                 "title_product":"$$h.title_product",
                                 "price":"$$h.price",
                                 "cutted_price":"$$h.cutted_price",
-                                "image":{'$arrayElemAt': ['$$h.image.filename', 0] } 
+                                "image":{'$arrayElemAt': ['$$h.image', 0] } 
                               }
                             }
                          } ]}
@@ -214,7 +214,7 @@ router.post('/create/:viewtypeId',upload.any(),verify,async(req,res)=>{
     }else if(req.params.viewtypeId == 1){
         top_deal= new AdBanner({
             background: req.body.background,
-            strip_ad_banner:req.files[0].path,
+            strip_ad_banner:"topdeals/"+req.files[0].filename,
             view_type: req.params.viewtypeId
         })
     }else if(req.params.viewtypeId == 2){
@@ -330,7 +330,7 @@ router.get('/:topdealId',async(req,res)=>{
                           "_id": "$$g._id",
                           "title_product":"$$g.title_product",
                           "price":"$$g.price",
-                          "image": {'$arrayElemAt': ['$$g.image.path', 0] } 
+                          "image": {'$arrayElemAt': ['$$g.image', 0] } 
                         }
                       }
                     } ]},
@@ -344,7 +344,7 @@ router.get('/:topdealId',async(req,res)=>{
                             "title_product":"$$h.title_product",
                             "price":"$$h.price",
                             "cutted_price":"$$h.cutted_price",
-                            "image": {'$arrayElemAt': ['$$h.image.path', 0] } 
+                            "image": {'$arrayElemAt': ['$$h.image', 0] } 
                           }
                         }
                      } ]}
@@ -407,7 +407,7 @@ router.delete('/delete/:topdealId',verify,async(req,res,next)=>{
             
             try {
                 if (result[0].view_type == 1){
-                    fs.unlinkSync('./'+result[0].strip_ad_banner)
+                    fs.unlinkSync('./public/uploads/'+result[0].strip_ad_banner)
                 }
                 const deleteTopDeal = await  Category.updateOne(
                 {
@@ -461,7 +461,7 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Id tidak diketahui");
             if (result[0].view_type == 1){
-                fs.unlinkSync('./'+result[0].strip_ad_banner)
+                fs.unlinkSync('./public/uploads/'+result[0].strip_ad_banner)
             }
     });
 
@@ -477,7 +477,7 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
 
         top_deals= new AdBanner({
             background: req.body.background,
-            strip_ad_banner:req.files[0].path,
+            strip_ad_banner:"topdeals/"+req.files[0].filename,
             view_type: req.params.viewtypeId
         })
 

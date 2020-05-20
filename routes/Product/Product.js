@@ -144,11 +144,14 @@ router.get('/search/',async(req,res)=>{
 //SUBMITS A Product
 router.post('/create',upload.any(),verify,async(req,res)=>{
 
-  
+    var imageArray = []
+    req.files.forEach(function(image) {
+         imageArray.push("pruduct/"+image.filename)
+        /* etc etc */ })
     const product = new Products({
-        
+
         title_product: toTitle(req.body.title_product),
-        image: req.files,
+        image: imageArray,
         category: req.body.category,
         price: req.body.price,
         cutted_price: req.body.cutted_price,
@@ -215,7 +218,7 @@ router.delete('/delete/:productId',verify,async(req,res)=>{
             try {
                 for (var i in product.image) {
                     val = product.image[i];
-                     fs.unlinkSync('./'+val.path)
+                    fs.unlinkSync('./public/uploads/'+val)
                 } 
   
                 //file removed
@@ -245,16 +248,20 @@ router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
 
             for (var i in product.image) {
                 val = product.image[i];
-                 fs.unlinkSync('./'+val.path)
+                 fs.unlinkSync('./public/uploads/'+val)
             } 
 
           
+            var imageArray = []
+            req.files.forEach(function(image) {
+                 imageArray.push(image.filename)
+                /* etc etc */ })
             //file removed
             const updatedProduct =await Products.updateOne(
                 {_id: req.params.productId},
                 {$set:{   
                     title_product: toTitle(req.body.title_product),
-                    image: req.files,
+                    image: imageArray,
                     category: req.body.category,
                     price: req.body.price,
                     cutted_price: req.body.cutted_price,

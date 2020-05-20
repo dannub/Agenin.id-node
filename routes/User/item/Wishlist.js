@@ -115,7 +115,7 @@ router.get('/count',verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },price:1,cutted_price:1,satuan:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,cutted_price:1,satuan:1 } }
                         ],
                         as: "product"
                     }
@@ -278,7 +278,7 @@ router.get('/:wishlistId', verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },price:1,cutted_price:1,in_stock:1,satuan:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,cutted_price:1,in_stock:1,satuan:1 } }
                         ],
                         as: "product"
                     }

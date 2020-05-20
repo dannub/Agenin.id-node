@@ -152,7 +152,7 @@ router.post('/create',upload.fields([
         id_pesan:id,
         title: req.body.title,
         body: req.body.body,
-        icon: req.files.icon[0].path,
+        icon: "notifications/"+req.files.icon[0].filename,
         readed: false,
       
         })
@@ -225,7 +225,7 @@ router.post('/create/:userIdNotif',upload.fields([
         id_pesan:id,
         title: req.body.title,
         body: req.body.body,
-        icon: req.files.icon[0].path,
+        icon: "notifications/"+req.files.icon[0].filename,
         readed: false,
       
         })

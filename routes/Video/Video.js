@@ -59,7 +59,7 @@ router.post('/create',upload.fields([
 
     
     const video = new Video({
-        img_Url: req.files.image[0].path,
+        img_Url: "video/"+req.files.image[0].filename,
         title: toTitle(req.body.title),
         videoId: req.body.videoId
     })
@@ -126,14 +126,14 @@ router.patch('/update/:videoId',upload.fields([
         const video =await Video.findById(req.params.videoId)
         try {
 
-            fs.unlinkSync('./'+video.img_Url)
+            fs.unlinkSync('./public/uploads/'+video.img_Url)
           
             //file removed
             const updatedVideo =await Video.updateOne(
                 {_id: req.params.videoId},
                 {$set:{   
                     title: toTitle(req.body.title),
-                    img_Url: req.files.image[0].path,
+                    img_Url: "video/"+req.files.image[0].filename,
                     vid_Id: req.body.vid_Id
                 }}
             )   

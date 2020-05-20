@@ -64,7 +64,7 @@ router.post('/create',upload.single('icon'),verify,async(req,res)=>{
 
     var path ={}
     if(req.method == "POST"){
-     path = req.file.path
+     path = "categories/"+req.file.filename
     }else{
         path = req.body.icon
     }
@@ -103,7 +103,7 @@ router.delete('/delete/:categoryId',verify,async(req,res)=>{
         try {
             const category =await Category.findById(req.params.categoryId)
             try {
-                fs.unlinkSync('./'+category.icon)
+                fs.unlinkSync('./public/uploads/'+category.icon)
                 console.log(category.icon)
                 //file removed
                 const removedCategory =await Category.deleteOne({_id: req.params.categoryId})
@@ -127,10 +127,18 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
     try {
 
 
+        var path ={}
+        if(req.method == "POST"){
+         path = "categories/"+req.file.filename
+        }else{
+            path = req.body.icon
+        }
+
+
         const category =await Category.findById(req.params.categoryId)
         try {
             if (category[0].icon != ""){
-                fs.unlinkSync('./'+category.icon)
+                fs.unlinkSync('./public/uploads/'+category.icon)
             }
             //file removed
             const updatedCategory =await Category.updateOne(
@@ -138,7 +146,7 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
                 {$set:{   
                     category_name: req.body.category_name,
                     status : req.body.status,
-                    icon: req.file.path,
+                    icon: path,
                 }}
             )
             res.status(200).json(updatedCategory)
@@ -153,7 +161,7 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
 })
 
 //Update a category
-router.patch('/update-status/:categoryId',upload.single('icon'),verify,async(req,res)=>{
+router.patch('/update-status/:categoryId',verify,async(req,res)=>{
 
     try {
 

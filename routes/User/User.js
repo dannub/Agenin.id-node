@@ -87,7 +87,7 @@ router.post('/register',upload_bukti.fields([
         email: req.body.email,
         password: hashPassword,
         profil: {},
-        bukti: req.files.bukti[0].path,
+        bukti: "daftar/"+req.files.bukti[0].filename,
         bukti_tgl: req.body.bukti_tgl,
         bukti_bank: req.body.bukti_bank,
         bukti_an: req.body.bukti_an,
@@ -228,10 +228,10 @@ router.delete('/delete/:userId',verify,async(req,res)=>{
         try {
             const user =await User.findById(req.params.userId)
             try {
-                fs.unlinkSync('./'+user.bukti)
+                fs.unlinkSync('./public/uploads/bukti/'+user.bukti)
                 for (var i in user.my_nota) {
                     val = user.my_nota[i];
-                     fs.unlinkSync('./'+val.path)
+                     fs.unlinkSync('./public/uploads/bukti/'+val)
                 } 
   
                 //file removed
@@ -304,18 +304,28 @@ router.patch('/info/update/:userId',upload_profil.fields([
         try {
 
             if((user.profil!= undefined && user.profil!= "")){
-                fs.unlinkSync('./'+user.profil)
+                fs.unlinkSync('./public/uploads/'+user.profil)
             }
-            const updateStatus =  await  User.updateOne(
-                {
-                    _id : req.params.userId
-                }
-                ,{ $set:  {name : req.body.name,email: req.body.email,  profil: req.files.profil[0].path}}
-               ).exec()
-            
-            
+
+            if(req.files!=undefined){
+                const updateStatus =  await  User.updateOne(
+                    {
+                        _id : req.params.userId
+                    }
+                    ,{ $set:  {name : req.body.name,email: req.body.email,  
+                        profil: "user/"+req.files.profil[0].filename}}
+                ).exec()
                 res.status(200).json(updateStatus)
-            
+            }else{
+                const updateStatus =  await  User.updateOne(
+                    {
+                        _id : req.params.userId
+                    }
+                    ,{ $set:  {name : req.body.name,email: req.body.email,  
+                        profil: ""}}
+                ).exec()
+                res.status(200).json(updateStatus)
+            }
           } catch(err) {
             console.error(err)
           }
@@ -335,7 +345,7 @@ router.patch('/info/delete/update/:userId',verify,async(req,res)=>{
         try {
 
             if((user.profil!= undefined && user.profil!= "")){
-                fs.unlinkSync('./'+user.profil)
+                fs.unlinkSync('./public/uploads/'+user.profil)
             }
             const updateStatus =  await  User.updateOne(
                 {
