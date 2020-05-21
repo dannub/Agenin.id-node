@@ -8,7 +8,7 @@ const fs = require('fs')
 const multer = require("multer")
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/products")
+        cb(null,"./public/assets/uploads/products")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -146,7 +146,7 @@ router.post('/create',upload.any(),verify,async(req,res)=>{
 
     var imageArray = []
     req.files.forEach(function(image) {
-         imageArray.push("products/"+image.filename)
+         imageArray.push("assets/uploads/products/"+image.filename)
         /* etc etc */ })
     const product = new Products({
 
@@ -218,7 +218,7 @@ router.delete('/delete/:productId',verify,async(req,res)=>{
             try {
                 for (var i in product.image) {
                     val = product.image[i];
-                    fs.unlinkSync('./public/uploads/'+val)
+                    fs.unlinkSync('./public/'+val)
                 } 
   
                 //file removed
@@ -248,13 +248,13 @@ router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
 
             for (var i in product.image) {
                 val = product.image[i];
-                 fs.unlinkSync('./public/uploads/'+val)
+                 fs.unlinkSync('./public/'+val)
             } 
 
           
             var imageArray = []
             req.files.forEach(function(image) {
-                 imageArray.push("products/"+image.filename)
+                 imageArray.push("assets/uploads/products/"+image.filename)
                 /* etc etc */ })
             //file removed
             const updatedProduct =await Products.updateOne(
