@@ -319,6 +319,21 @@ router.delete('/delete/:notaId',verify,async(req,res,next)=>{
     );
     if(!NotaExist) return res.status(400).send('Nota tidak ditemukan');
    
+        //Check id is exist
+    await User.aggregate([
+        {"$unwind":"$my_nota"}, 
+        {"$match":{
+            _id : mongoose.Types.ObjectId(req.params.userId),
+            "my_nota._id" : mongoose.Types.ObjectId(req.params.notaId )}},
+        { $replaceRoot: { newRoot:"$my_nota"}}
+    ])
+    .exec(async(err, result) => {
+        if (err) throw res.status(400).json("Id tidak diketahui");
+          
+           fs.unlinkSync('./public/uploads/bukti/'+result[0].bukti)
+            
+    });
+
     try {
        
         const deleteNota = await  User.updateOne(
@@ -349,14 +364,14 @@ router.patch('/update/:notaId',verify,async(req,res)=>{
     await User.aggregate([
         {"$unwind":"$my_nota"}, 
         {"$match":{
-            _id : req.params.userId,
+            _id : mongoose.Types.ObjectId(req.params.userId),
             "my_nota._id" : mongoose.Types.ObjectId(req.params.notaId )},
         },
         { $replaceRoot: { newRoot:"$my_nota"}}
     ])
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Nota Id tidak diketahui");
-         
+        fs.unlinkSync('./public/uploads/bukti/'+result[0].bukti)
     });
 
 

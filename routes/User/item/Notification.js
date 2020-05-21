@@ -438,6 +438,7 @@ router.delete('/deleteAllbyIdPesan/:notificationId',verify,async(req,res,next)=>
             if (err) throw res.status(400).json({message: err})
 
             result.forEach(async function(notif) {
+                fs.unlinkSync('./public/uploads/'+notif.icon)
                  await  User.updateOne(
                     {
                         _id:  mongoose.Types.ObjectId(notif.user_id),
