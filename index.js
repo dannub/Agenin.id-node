@@ -32,15 +32,15 @@ mongoose.connect(
 
 //Middlewares
 app.use(cors())
-app.use('/assets/uploads/categories/',express.static('public/uploads/categories'));
-app.use('/assets/uploads/products/',express.static('public/uploads/products'));
-app.use('/assets/uploads/item/',express.static('public/uploads/item'));
-app.use('/assets/uploads/notifications/',express.static('public/uploads/notifications'));
-app.use('/assets/uploads/topdeals/',express.static('public/uploads/topdeals'));
-app.use('/assets/uploads/user/',express.static('public/uploads/user'));
-app.use('/assets/uploads/nota/',express.static('public/uploads/bukti/nota'));
-app.use('/assets/uploads/daftar/',express.static('public/uploads/bukti/daftar'));
-app.use('/assets/uploads/video/',express.static('public/uploads/video'));
+app.use('/assets/uploads/categories/',express.static('public/assets/uploads/categories'));
+app.use('/assets/uploads/products/',express.static('public/assets/uploads/products'));
+app.use('/assets/uploads/item/',express.static('public/assets/uploads/item'));
+app.use('/assets/uploads/notifications/',express.static('public/assets/uploads/notifications'));
+app.use('/assets/uploads/topdeals/',express.static('public/assets/uploads/topdeals'));
+app.use('/assets/uploads/user/',express.static('public/assets/uploads/user'));
+app.use('/assets/uploads/nota/',express.static('public/assets/uploads/bukti/nota'));
+app.use('/assets/uploads/daftar/',express.static('public/assets/uploads/bukti/daftar'));
+app.use('/assets/uploads/video/',express.static('public/assets/uploads/video'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
