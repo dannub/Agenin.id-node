@@ -20,7 +20,7 @@ const fs = require('fs')
 const multer = require("multer")
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/notifications/")
+        cb(null,"./public/assets/uploads/notifications/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -152,7 +152,7 @@ router.post('/create',upload.fields([
         id_pesan:id,
         title: req.body.title,
         body: req.body.body,
-        icon: "notifications/"+req.files.icon[0].filename,
+        icon: "assets/uploads/notifications/"+req.files.icon[0].filename,
         readed: false,
       
         })
@@ -225,7 +225,7 @@ router.post('/create/:userIdNotif',upload.fields([
         id_pesan:id,
         title: req.body.title,
         body: req.body.body,
-        icon: "notifications/"+req.files.icon[0].filename,
+        icon: "assets/uploads/notifications/"+req.files.icon[0].filename,
         readed: false,
       
         })
@@ -438,7 +438,7 @@ router.delete('/deleteAllbyIdPesan/:notificationId',verify,async(req,res,next)=>
             if (err) throw res.status(400).json({message: err})
 
             result.forEach(async function(notif) {
-                fs.unlinkSync('./public/uploads/'+notif.icon)
+                fs.unlinkSync('./public/'+notif.icon)
                  await  User.updateOne(
                     {
                         _id:  mongoose.Types.ObjectId(notif.user_id),

@@ -18,7 +18,7 @@ const fs = require('fs')
 const multer = require("multer")
 const storage_profil = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/user/")
+        cb(null,"./public/assets/uploads/user/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -26,7 +26,7 @@ const storage_profil = multer.diskStorage({
 })
 const storage_bukti = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/bukti/daftar/")
+        cb(null,"./public/assets/uploads/bukti/daftar/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -87,7 +87,7 @@ router.post('/register',upload_bukti.fields([
         email: req.body.email,
         password: hashPassword,
         profil: {},
-        bukti: "daftar/"+req.files.bukti[0].filename,
+        bukti: "assets/uploads/bukti/daftar/"+req.files.bukti[0].filename,
         bukti_tgl: req.body.bukti_tgl,
         bukti_bank: req.body.bukti_bank,
         bukti_an: req.body.bukti_an,
@@ -228,10 +228,10 @@ router.delete('/delete/:userId',verify,async(req,res)=>{
         try {
             const user =await User.findById(req.params.userId)
             try {
-                fs.unlinkSync('./public/uploads/bukti/'+user.bukti)
+                fs.unlinkSync('./public/'+user.bukti)
                 for (var i in user.my_nota) {
                     val = user.my_nota[i];
-                     fs.unlinkSync('./public/uploads/bukti/'+val)
+                     fs.unlinkSync('./public/'+val)
                 } 
   
                 //file removed
@@ -304,7 +304,7 @@ router.patch('/info/update/:userId',upload_profil.fields([
         try {
 
             if((user.profil!= undefined && user.profil!= "")){
-                fs.unlinkSync('./public/uploads/'+user.profil)
+                fs.unlinkSync('./public/'+user.profil)
             }
 
             if(req.files!=undefined){
@@ -313,7 +313,7 @@ router.patch('/info/update/:userId',upload_profil.fields([
                         _id : req.params.userId
                     }
                     ,{ $set:  {name : req.body.name,email: req.body.email,  
-                        profil: "user/"+req.files.profil[0].filename}}
+                        profil: "assets/uploads/user/"+req.files.profil[0].filename}}
                 ).exec()
                 res.status(200).json(updateStatus)
             }else{
@@ -345,7 +345,7 @@ router.patch('/info/delete/update/:userId',verify,async(req,res)=>{
         try {
 
             if((user.profil!= undefined && user.profil!= "")){
-                fs.unlinkSync('./public/uploads/'+user.profil)
+                fs.unlinkSync('./public/'+user.profil)
             }
             const updateStatus =  await  User.updateOne(
                 {

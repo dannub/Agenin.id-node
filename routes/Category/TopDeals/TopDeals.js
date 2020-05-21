@@ -19,7 +19,7 @@ const fs = require('fs')
 const multer = require("multer")
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/topdeals")
+        cb(null,"./public/assets/uploads/topdeals")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -214,7 +214,7 @@ router.post('/create/:viewtypeId',upload.any(),verify,async(req,res)=>{
     }else if(req.params.viewtypeId == 1){
         top_deal= new AdBanner({
             background: req.body.background,
-            strip_ad_banner:"topdeals/"+req.files[0].filename,
+            strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
             view_type: req.params.viewtypeId
         })
     }else if(req.params.viewtypeId == 2){
@@ -407,7 +407,7 @@ router.delete('/delete/:topdealId',verify,async(req,res,next)=>{
             
             try {
                 if (result[0].view_type == 1){
-                    fs.unlinkSync('./public/uploads/'+result[0].strip_ad_banner)
+                    fs.unlinkSync('./public/'+result[0].strip_ad_banner)
                 }
                 const deleteTopDeal = await  Category.updateOne(
                 {
@@ -461,7 +461,7 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Id tidak diketahui");
             if (result[0].view_type == 1){
-                fs.unlinkSync('./public/uploads/'+result[0].strip_ad_banner)
+                fs.unlinkSync('./public/'+result[0].strip_ad_banner)
             }
     });
 
@@ -477,7 +477,7 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
 
         top_deals= new AdBanner({
             background: req.body.background,
-            strip_ad_banner:"topdeals/"+req.files[0].filename,
+            strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
             view_type: req.params.viewtypeId
         })
 

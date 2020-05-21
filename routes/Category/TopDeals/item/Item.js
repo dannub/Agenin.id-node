@@ -19,7 +19,7 @@ const fs = require('fs')
 const multer = require("multer")
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/item/")
+        cb(null,"./public/assets/uploads/item/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -137,7 +137,7 @@ router.post('/create',upload.any(),verify,async(req,res)=>{
         if(viewtypeId == 0){
         
             item= new MoveBanner({
-                banner: "item/"+req.files[0].filename,
+                banner: "assets/uploads/item/"+req.files[0].filename,
                 banner_background: req.body.banner_background
             })
             try {
@@ -359,7 +359,7 @@ router.delete('/delete/:itemId',verify,async(req,res)=>{
             .exec(async(err, result) => {
                 if (err) throw res.status(400).json({message: error});
                     if(result[0].banner!=""){
-                        fs.unlinkSync('./public/uploads/'+result[0].banner)
+                        fs.unlinkSync('./public/'+result[0].banner)
                     }
                     deleteItem = await  Category.updateOne(
                         {
@@ -488,7 +488,7 @@ router.patch('/update/:itemId',upload.any(),verify,async(req,res)=>{
 
         if(itemviewId == 0){
             Item= new MoveBanner({
-                banner:  "item/"+req.files[0].filename,
+                banner:  "assets/uploads/item/"+req.files[0].filename,
                 banner_background: req.body.banner_background
             })
 
@@ -515,7 +515,7 @@ router.patch('/update/:itemId',upload.any(),verify,async(req,res)=>{
             .exec(async(err, result) => {
                 if (err) throw res.status(400).json({message: error});
                     if(result[0].banner!=""){
-                        fs.unlinkSync('./public/uploads/'+result[0].banner)
+                        fs.unlinkSync('./public/'+result[0].banner)
                     }
                     const updateItem =  await  Category.updateOne(
                         {

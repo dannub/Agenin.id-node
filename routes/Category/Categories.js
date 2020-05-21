@@ -8,7 +8,7 @@ const fs = require('fs')
 const multer = require("multer")
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/categories/")
+        cb(null,"./public/assets/uploads/categories/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -64,7 +64,7 @@ router.post('/create',upload.single('icon'),verify,async(req,res)=>{
 
     var path ={}
     if(req.method == "POST"){
-     path = "categories/"+req.file.filename
+     path = "assets/uploads/categories/"+req.file.filename
     }else{
         path = req.body.icon
     }
@@ -103,7 +103,7 @@ router.delete('/delete/:categoryId',verify,async(req,res)=>{
         try {
             const category =await Category.findById(req.params.categoryId)
             try {
-                fs.unlinkSync('./public/uploads/'+category.icon)
+                fs.unlinkSync('./public/'+category.icon)
                 console.log(category.icon)
                 //file removed
                 const removedCategory =await Category.deleteOne({_id: req.params.categoryId})
@@ -129,7 +129,7 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
 
         var path ={}
         if(req.method == "POST"){
-         path = "categories/"+req.file.filename
+         path = "assets/uploads/categories/"+req.file.filename
         }else{
             path = req.body.icon
         }
@@ -138,7 +138,7 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
         const category =await Category.findById(req.params.categoryId)
         try {
             if (category[0].icon != ""){
-                fs.unlinkSync('./public/uploads/'+category.icon)
+                fs.unlinkSync('./public/'+category.icon)
             }
             //file removed
             const updatedCategory =await Category.updateOne(

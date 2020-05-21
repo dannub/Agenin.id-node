@@ -12,7 +12,7 @@ const multer = require("multer")
 
 const storage= multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/video/")
+        cb(null,"./public/assets/uploads/video/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -59,7 +59,7 @@ router.post('/create',upload.fields([
 
     
     const video = new Video({
-        img_Url: "video/"+req.files.image[0].filename,
+        img_Url: "assets/uploads/video/"+req.files.image[0].filename,
         title: toTitle(req.body.title),
         videoId: req.body.videoId
     })
@@ -95,7 +95,7 @@ router.delete('/delete/:videoId',verify,async(req,res)=>{
             const video =await Video.findById(req.params.videoId)
             
             try {
-                fs.unlinkSync('./'+video.img_Url)
+                fs.unlinkSync('./public/'+video.img_Url)
              
   
                 //file removed
@@ -126,14 +126,14 @@ router.patch('/update/:videoId',upload.fields([
         const video =await Video.findById(req.params.videoId)
         try {
 
-            fs.unlinkSync('./public/uploads/'+video.img_Url)
+            fs.unlinkSync('./public/'+video.img_Url)
           
             //file removed
             const updatedVideo =await Video.updateOne(
                 {_id: req.params.videoId},
                 {$set:{   
                     title: toTitle(req.body.title),
-                    img_Url: "video/"+req.files.image[0].filename,
+                    img_Url: "assets/uploads/video/"+req.files.image[0].filename,
                     vid_Id: req.body.vid_Id
                 }}
             )   

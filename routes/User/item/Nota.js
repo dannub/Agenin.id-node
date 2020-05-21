@@ -19,7 +19,7 @@ const multer = require("multer")
 
 const storage = multer.diskStorage({
     destination: function (req,file,cb) {
-        cb(null,"./public/uploads/bukti/nota/")
+        cb(null,"./public/assete/uploads/bukti/nota/")
     },
     filename: function (req,file,cb) {
         cb(null, new Date().toISOString()+ file.originalname)
@@ -177,7 +177,7 @@ router.post('/create',upload.fields([
 
     var  nota= new Nota({
         //send
-        bukti: "nota/"+req.files.bukti[0].filename,
+        bukti: "assets/uploads/nota/"+req.files.bukti[0].filename,
         atas_nama: req.body.atas_nama,
         bank: req.body.bank,
         tgl_transfer: req.body.tgl_transfer,
@@ -330,7 +330,7 @@ router.delete('/delete/:notaId',verify,async(req,res,next)=>{
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Id tidak diketahui");
           
-           fs.unlinkSync('./public/uploads/bukti/'+result[0].bukti)
+           fs.unlinkSync('./public/'+result[0].bukti)
             
     });
 
@@ -371,7 +371,7 @@ router.patch('/update/:notaId',verify,async(req,res)=>{
     ])
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Nota Id tidak diketahui");
-        fs.unlinkSync('./public/uploads/bukti/'+result[0].bukti)
+        fs.unlinkSync('./public/'+result[0].bukti)
     });
 
 
