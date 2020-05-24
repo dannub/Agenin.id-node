@@ -29,6 +29,10 @@ const ProductSchema = mongoose.Schema({
     satuan:{
         type: String
     },
+    min_order:{
+        type: String,
+        required:true
+    },
     berat:{
         type: SchemaTypes.Double,
         required:true
