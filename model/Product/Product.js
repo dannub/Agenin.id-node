@@ -30,7 +30,7 @@ const ProductSchema = mongoose.Schema({
         type: String
     },
     min_order:{
-        type: String,
+        type: Number,
         required:true
     },
     berat:{
