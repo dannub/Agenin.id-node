@@ -156,7 +156,7 @@ router.post('/create',upload.any(),verify,async(req,res)=>{
         price: req.body.price,
         cutted_price: req.body.cutted_price,
         satuan: req.body.satuan,
-        min_order:req.body.satuan,
+        min_order:req.body.min_order,
         berat:req.body.berat,
         sent_from: req.body.sent_from,
         estimation: req.body.estimation,
