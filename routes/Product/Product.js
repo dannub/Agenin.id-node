@@ -41,7 +41,7 @@ router.get('/',async(req,res)=>{
     var numOfProducts,numOfpage  
   
    
-    if(req.body.search!=undefined && req.body.search!=""){
+    if(req.query.search!=undefined && req.query.search!=""){
         try {
             
             
@@ -49,11 +49,11 @@ router.get('/',async(req,res)=>{
             {
                 $or:
                     [ 
-                        { title_product : new RegExp(req.body.search ,'i')},
-                        {category : new RegExp(req.body.search ,'i')},
-                        {sent_from : new RegExp(req.body.search ,'i')},
-                        {decription : new RegExp(req.body.search ,'i')},
-                        {tags : new RegExp(req.body.search ,'i')},
+                        { title_product : new RegExp(req.query.search ,'i')},
+                        {category : new RegExp(req.query.search ,'i')},
+                        {sent_from : new RegExp(req.query.search ,'i')},
+                        {decription : new RegExp(req.query.search ,'i')},
+                        {tags : new RegExp(req.query.search ,'i')},
                     ]
                 
             }).skip((resPerPage * page) - resPerPage)
@@ -65,11 +65,11 @@ router.get('/',async(req,res)=>{
                 {
                     $or:
                         [ 
-                            { title_product : new RegExp(req.body.search ,'i')},
-                            {category : new RegExp(req.body.search ,'i')},
-                            {sent_from : new RegExp(req.body.search ,'i')},
-                            {decription : new RegExp(req.body.search ,'i')},
-                            {tags : new RegExp(req.body.search ,'i')},
+                            { title_product : new RegExp(req.query.search ,'i')},
+                            {category : new RegExp(req.query.search ,'i')},
+                            {sent_from : new RegExp(req.query.search ,'i')},
+                            {decription : new RegExp(req.query.search ,'i')},
+                            {tags : new RegExp(req.query.search ,'i')},
                         ]
                     
                 }).countDocuments()
@@ -124,11 +124,11 @@ router.get('/search/',async(req,res)=>{
             {
                 $or:
                     [ 
-                        { title_product : new RegExp(req.body.Search ,'i')},
-                        {category : new RegExp(req.body.Search ,'i')},
-                        {sent_from : new RegExp(req.body.Search ,'i')},
-                        {decription : new RegExp(req.body.Search ,'i')},
-                        {tags : new RegExp(req.body.Search ,'i')},
+                        { title_product : new RegExp(req.query.search ,'i')},
+                        {category : new RegExp(req.query.search ,'i')},
+                        {sent_from : new RegExp(req.query.search ,'i')},
+                        {decription : new RegExp(req.query.search ,'i')},
+                        {tags : new RegExp(req.query.search ,'i')},
                     ]
                 
             })

@@ -128,7 +128,8 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
 
 
         var path ={}
-        if(req.method == "POST"){
+        
+        if(req.file.filename!=undefined){
          path = "assets/uploads/categories/"+req.file.filename
         }else{
             path = req.body.icon
@@ -137,8 +138,10 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
 
         const category =await Category.findById(req.params.categoryId)
         try {
-            if (category[0].icon != ""){
+            if (category.icon != ""){
+                
                 fs.unlinkSync('./public/'+category.icon)
+
             }
             //file removed
             const updatedCategory =await Category.updateOne(
@@ -168,7 +171,7 @@ router.patch('/update-status/:categoryId',verify,async(req,res)=>{
 
         const category =await Category.findById(req.params.categoryId)
         try {
-            // if (category[0].icon != ""){
+            // if (category.icon != ""){
             //     fs.unlinkSync('./'+category.icon)
             // }
             var status
