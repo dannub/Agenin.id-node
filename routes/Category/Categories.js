@@ -142,7 +142,6 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
                  {_id: req.params.categoryId},
                  {$set:{   
                      category_name: req.body.category_name,
-                     status : req.body.status,
                      icon: path,
                      slug:slugify(req.body.category_name)
                  }}
@@ -159,7 +158,6 @@ router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>
                     {_id: req.params.categoryId},
                     {$set:{   
                         category_name: req.body.category_name,
-                        status : req.body.status,
                         slug:slugify(req.body.category_name)
                     }}
                 )
