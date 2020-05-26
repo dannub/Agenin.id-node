@@ -303,11 +303,12 @@ router.patch('/info/update/:userId',upload_profil.fields([
 
         try {
 
-            if((user.profil!= undefined && user.profil!= "")){
-                fs.unlinkSync('./public/'+user.profil)
-            }
 
-            if(req.files!=undefined){
+            if(req.files.profil[0]!=undefined){
+                if((user.profil!= undefined && user.profil!= "")){
+                    fs.unlinkSync('./public/'+user.profil)
+                }
+
                 const updateStatus =  await  User.updateOne(
                     {
                         _id : req.params.userId
