@@ -17,6 +17,12 @@ const userSchema = new mongoose.Schema({
         max: 225,
         min: 6
     },
+    name_refferal: {
+        type: String,
+        required: true,
+        min: 6,
+        max: 255
+    },
     password:{
         type: String,
         required: true,

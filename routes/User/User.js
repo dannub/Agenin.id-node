@@ -85,6 +85,7 @@ router.post('/register',upload_bukti.fields([
         token_fb:req.body.name,
         name: req.body.name,
         email: req.body.email,
+        name_refferal: req.body.name_refferal,
         password: hashPassword,
         profil: {},
         bukti: "assets/uploads/bukti/daftar/"+req.files.bukti[0].filename,
