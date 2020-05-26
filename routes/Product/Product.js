@@ -244,13 +244,14 @@ router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
     try {
 
 
-        const product =await Products.findById(req.params.products)
+        const product =await Products.findById(req.params.productId)
         try {
 
             for (var i in product.image) {
                 val = product.image[i];
                  fs.unlinkSync('./public/'+val)
             } 
+
 
           
             var imageArray = []
@@ -302,12 +303,13 @@ router.patch('/updateInStock/:productId',verify,async(req,res)=>{
             })  
             .exec(async(err, result) => {
                 if (err) throw res.status(400).json({message: err});
-            
+                
+                
                 var newinstock
                 try {
                     //file removed
                     
-                    if(in_stock){
+                    if(result[0].in_stock){
                       newinstock = false
                     }else{
                         newinstock = true
