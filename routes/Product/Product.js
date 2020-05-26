@@ -40,8 +40,9 @@ router.get('/',async(req,res)=>{
     const page = parseInt(req.query.page || 1); 
     var numOfProducts,numOfpage  
   
-   
+
     if(req.query.search!=undefined && req.query.search!=""){
+       
         try {
             
             
@@ -50,10 +51,11 @@ router.get('/',async(req,res)=>{
                 $or:
                     [ 
                         { title_product : new RegExp(req.query.search ,'i')},
+                        {tags : new RegExp(req.query.search ,'i')},
                         {category : new RegExp(req.query.search ,'i')},
                         {sent_from : new RegExp(req.query.search ,'i')},
                         {decription : new RegExp(req.query.search ,'i')},
-                        {tags : new RegExp(req.query.search ,'i')},
+                      
                     ]
                 
             }).skip((resPerPage * page) - resPerPage)
@@ -66,10 +68,11 @@ router.get('/',async(req,res)=>{
                     $or:
                         [ 
                             { title_product : new RegExp(req.query.search ,'i')},
+                            {tags : new RegExp(req.query.search ,'i')},
                             {category : new RegExp(req.query.search ,'i')},
                             {sent_from : new RegExp(req.query.search ,'i')},
                             {decription : new RegExp(req.query.search ,'i')},
-                            {tags : new RegExp(req.query.search ,'i')},
+                           
                         ]
                     
                 }).countDocuments()
