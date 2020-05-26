@@ -460,9 +460,11 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
     ])
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Id tidak diketahui");
+        if(req.files[0]!=undefined){
             if (result[0].view_type == 1){
                 fs.unlinkSync('./public/'+result[0].strip_ad_banner)
             }
+        }
     });
 
     var top_deals ={}
@@ -473,14 +475,59 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
             move_banner: [],
             view_type: req.params.viewtypeId
         })
+        try {
+
+
+
+            const updateTopDeal =    await  Category.updateOne({
+                    slug : req.params.slugCategory,
+                    'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                  }, { $set: { 'top_deals.$': top_deals }})
+                  .exec();
+                res.status(200).json(updateTopDeal)
+            
+        } catch (error) {
+            res.status(400).json({message: error})
+        }
     }else if(req.params.viewtypeId == 1){
 
-        top_deals= new AdBanner({
-            background: req.body.background,
-            strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
-            view_type: req.params.viewtypeId
-        })
+        if(req.files[0]!=undefined){
+         
+            top_deals= new AdBanner({
+                background: req.body.background,
+                strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
+                view_type: req.params.viewtypeId
+            })
+            try {
 
+
+
+                const updateTopDeal =    await  Category.updateOne({
+                        slug : req.params.slugCategory,
+                        'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                    }, { $set: { 'top_deals.$': top_deals }})
+                    .exec();
+                    res.status(200).json(updateTopDeal)
+                
+            } catch (error) {
+                res.status(400).json({message: error})
+            }
+        }else{
+            try {
+
+
+
+                const updateTopDeal =    await  Category.updateOne({
+                        slug : req.params.slugCategory,
+                        'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                    }, { $set: { 'top_deals.$.background': req.body.background }})
+                    .exec();
+                    res.status(200).json(updateTopDeal)
+                
+            } catch (error) {
+                res.status(400).json({message: error})
+            }
+        }
     }else if(req.params.viewtypeId == 2){
     
         top_deals= new GridViews({
@@ -489,7 +536,20 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
             grid_view: [],
             view_type: req.params.viewtypeId
         })
+        try {
 
+
+
+            const updateTopDeal =    await  Category.updateOne({
+                    slug : req.params.slugCategory,
+                    'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                  }, { $set: { 'top_deals.$': top_deals }})
+                  .exec();
+                res.status(200).json(updateTopDeal)
+            
+        } catch (error) {
+            res.status(400).json({message: error})
+        }
     }else if(req.params.viewtypeId == 3){
         top_deals= new HorisontalViews({
             layout_background: req.body.layout_background,
@@ -497,25 +557,26 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
             view_type: req.params.viewtypeId
             
         })
+        try {
+
+
+
+            const updateTopDeal =    await  Category.updateOne({
+                    slug : req.params.slugCategory,
+                    'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                  }, { $set: { 'top_deals.$': top_deals }})
+                  .exec();
+                res.status(200).json(updateTopDeal)
+            
+        } catch (error) {
+            res.status(400).json({message: error})
+        }
     }else{
         res.status(400).json("Input View Type Salah")
     }
 
 
-    try {
-
-
-
-        const updateTopDeal =    await  Category.updateOne({
-                slug : req.params.slugCategory,
-                'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
-              }, { $set: { 'top_deals.$': top_deals }})
-              .exec();
-            res.status(200).json(updateTopDeal)
-        
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+   
 
    
     

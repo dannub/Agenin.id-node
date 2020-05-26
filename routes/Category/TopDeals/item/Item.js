@@ -487,46 +487,83 @@ router.patch('/update/:itemId',upload.any(),verify,async(req,res)=>{
    
 
         if(itemviewId == 0){
-            Item= new MoveBanner({
-                banner:  "assets/uploads/item/"+req.files[0].filename,
-                banner_background: req.body.banner_background
-            })
+            if(req.files[0]!=undefined){
+                Item= new MoveBanner({
+                    banner:  "assets/uploads/item/"+req.files[0].filename,
+                    banner_background: req.body.banner_background
+                })
 
-            await Category.aggregate([ {"$unwind":"$top_deals"}, 
-            {
-                $match: { 
-                    slug : req.params.slugCategory,
-                    "top_deals._id": mongoose.Types.ObjectId(req.params.topdealId)
-                }
-              },
-              {$project : {
-                item : "$top_deals.move_banner"
-                }
-            }
-            ,{"$unwind":"$item"}
-            ,{ $replaceRoot: { newRoot:"$item"}}
-            , {
-                $match: { 
-                   "_id": mongoose.Types.ObjectId(req.params.itemId)
-                }
-              }
-              
-            ])
-            .exec(async(err, result) => {
-                if (err) throw res.status(400).json({message: error});
-                    if(result[0].banner!=""){
-                        fs.unlinkSync('./public/'+result[0].banner)
+                await Category.aggregate([ {"$unwind":"$top_deals"}, 
+                {
+                    $match: { 
+                        slug : req.params.slugCategory,
+                        "top_deals._id": mongoose.Types.ObjectId(req.params.topdealId)
                     }
-                    const updateItem =  await  Category.updateOne(
-                        {
-                           "slug" :req.params.slugCategory
-                              
+                },
+                {$project : {
+                    item : "$top_deals.move_banner"
+                    }
+                }
+                ,{"$unwind":"$item"}
+                ,{ $replaceRoot: { newRoot:"$item"}}
+                , {
+                    $match: { 
+                    "_id": mongoose.Types.ObjectId(req.params.itemId)
+                    }
+                }
+                
+                ])
+                .exec(async(err, result) => {
+                    if (err) throw res.status(400).json({message: error});
+                        if(result[0].banner!=""){
+                            fs.unlinkSync('./public/'+result[0].banner)
                         }
-                        ,{ $set:  {'top_deals.$[i].move_banner.$[j]': Item }}
-                        , {arrayFilters: [{"i._id": mongoose.Types.ObjectId(req.params.topdealId )}, {"j._id":  mongoose.Types.ObjectId(req.params.itemId)}]} 
-                       ).exec()
-                        res.status(200).json(updateItem)
-            })
+                        const updateItem =  await  Category.updateOne(
+                            {
+                            "slug" :req.params.slugCategory
+                                
+                            }
+                            ,{ $set:  {'top_deals.$[i].move_banner.$[j]': Item }}
+                            , {arrayFilters: [{"i._id": mongoose.Types.ObjectId(req.params.topdealId )}, {"j._id":  mongoose.Types.ObjectId(req.params.itemId)}]} 
+                        ).exec()
+                            res.status(200).json(updateItem)
+                })
+            }else{
+
+                await Category.aggregate([ {"$unwind":"$top_deals"}, 
+                {
+                    $match: { 
+                        slug : req.params.slugCategory,
+                        "top_deals._id": mongoose.Types.ObjectId(req.params.topdealId)
+                    }
+                },
+                {$project : {
+                    item : "$top_deals.move_banner"
+                    }
+                }
+                ,{"$unwind":"$item"}
+                ,{ $replaceRoot: { newRoot:"$item"}}
+                , {
+                    $match: { 
+                    "_id": mongoose.Types.ObjectId(req.params.itemId)
+                    }
+                }
+                
+                ])
+                .exec(async(err, result) => {
+                    if (err) throw res.status(400).json({message: error});
+                     
+                        const updateItem =  await  Category.updateOne(
+                            {
+                            "slug" :req.params.slugCategory
+                                
+                            }
+                            ,{ $set:  {'top_deals.$[i].move_banner.$[j].banner_background': req.body.banner_background }}
+                            , {arrayFilters: [{"i._id": mongoose.Types.ObjectId(req.params.topdealId )}, {"j._id":  mongoose.Types.ObjectId(req.params.itemId)}]} 
+                        ).exec()
+                            res.status(200).json(updateItem)
+                })
+            }
                 
            
         }else if(itemviewId == 2){

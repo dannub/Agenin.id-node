@@ -22,7 +22,8 @@
     "mongoose": "^5.9.10",
     "mongoose-double": "0.0.1",
     "mongoose-slug-generator": "^1.0.4",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "slugify": "^1.4.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.3"

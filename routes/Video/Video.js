@@ -120,32 +120,45 @@ router.patch('/update/:videoId',upload.fields([
     name: 'image'
   }]),verify,async(req,res)=>{
 
-    try {
+        if(req.files.image!=undefined){
+            
 
+            const video =await Video.findById(req.params.videoId)
+            try {
 
-        const video =await Video.findById(req.params.videoId)
-        try {
+                fs.unlinkSync('./public/'+video.img_Url)
+            
+                //file removed
+                const updatedVideo =await Video.updateOne(
+                    {_id: req.params.videoId},
+                    {$set:{   
+                        title: toTitle(req.body.title),
+                        img_Url: "assets/uploads/video/"+req.files.image[0].filename,
+                        videoId: req.body.videoId
+                    }}
+                )   
+                res.status(200).json(updatedVideo)
+            } catch(err) {
+                console.error(err)
+            }
 
-            fs.unlinkSync('./public/'+video.img_Url)
-          
-            //file removed
-            const updatedVideo =await Video.updateOne(
-                {_id: req.params.videoId},
-                {$set:{   
-                    title: toTitle(req.body.title),
-                    img_Url: "assets/uploads/video/"+req.files.image[0].filename,
-                    vid_Id: req.body.vid_Id
-                }}
-            )   
-            res.status(200).json(updatedVideo)
-          } catch(err) {
-            console.error(err)
-          }
+        }else{
+            console.log("jkjhasdkjhdask")
+            try {
 
-       
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+                //file removed
+                const updatedVideo =await Video.updateOne(
+                    {_id: req.params.videoId},
+                    {$set:{   
+                        title: toTitle(req.body.title),
+                        videoId: req.body.videoId
+                    }}
+                )   
+                res.status(200).json(updatedVideo)
+            } catch(err) {
+                console.error(err)
+            }
+        }
 })
 
 

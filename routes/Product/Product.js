@@ -241,52 +241,75 @@ router.delete('/delete/:productId',verify,async(req,res)=>{
 //Update a category
 router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
 
-    try {
+        if(req.files.image!=undefined){
+                
+
+            const product =await Products.findById(req.params.productId)
+            try {
+
+                for (var i in product.image) {
+                    val = product.image[i];
+                    fs.unlinkSync('./public/'+val)
+                } 
 
 
-        const product =await Products.findById(req.params.productId)
-        try {
+            
+                var imageArray = []
+                req.files.forEach(function(image) {
+                    imageArray.push("assets/uploads/products/"+image.filename)
+                    /* etc etc */ })
+                //file removed
+                const updatedProduct =await Products.updateOne(
+                    {_id: req.params.productId},
+                    {$set:{   
+                        title_product: toTitle(req.body.title_product),
+                        image: imageArray,
+                        category: req.body.category,
+                        price: req.body.price,
+                        cutted_price: req.body.cutted_price,
+                        satuan: req.body.satuan,
+                        min_order:req.body.min_order,
+                        berat:req.body.berat,
+                        sent_from: req.body.sent_from,
+                        estimation: req.body.estimation,
+                        tags: req.body.tags,
+                        in_stock: req.body.in_stock,
+                        decription: toTextArea(req.body.decription),
+                        no_pedagang: req.body.no_pedagang
+                    }}
+                )   
+                res.status(200).json(updatedProduct)
+            } catch(err) {
+                console.error(err)
+            }
 
-            for (var i in product.image) {
-                val = product.image[i];
-                 fs.unlinkSync('./public/'+val)
-            } 
+        }else{
+            
+            try {
 
-
-          
-            var imageArray = []
-            req.files.forEach(function(image) {
-                 imageArray.push("assets/uploads/products/"+image.filename)
-                /* etc etc */ })
-            //file removed
-            const updatedProduct =await Products.updateOne(
-                {_id: req.params.productId},
-                {$set:{   
-                    title_product: toTitle(req.body.title_product),
-                    image: imageArray,
-                    category: req.body.category,
-                    price: req.body.price,
-                    cutted_price: req.body.cutted_price,
-                    satuan: req.body.satuan,
-                    min_order:req.body.min_order,
-                    berat:req.body.berat,
-                    sent_from: req.body.sent_from,
-                    estimation: req.body.estimation,
-                    tags: req.body.tags,
-                    in_stock: req.body.in_stock,
-                    decription: toTextArea(req.body.decription),
-                    no_pedagang: req.body.no_pedagang
-                }}
-            )   
-            res.status(200).json(updatedProduct)
-          } catch(err) {
-            console.error(err)
-          }
-
-       
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+                const updatedProduct =await Products.updateOne(
+                    {_id: req.params.productId},
+                    {$set:{   
+                        title_product: toTitle(req.body.title_product),
+                        category: req.body.category,
+                        price: req.body.price,
+                        cutted_price: req.body.cutted_price,
+                        satuan: req.body.satuan,
+                        min_order:req.body.min_order,
+                         berat:req.body.berat,
+                        sent_from: req.body.sent_from,
+                        estimation: req.body.estimation,
+                        tags: req.body.tags,
+                        in_stock: req.body.in_stock,
+                        decription: toTextArea(req.body.decription),
+                        no_pedagang: req.body.no_pedagang
+                    }}
+                )   
+                res.status(200).json(updatedProduct)
+            } catch(err) {
+                console.error(err)
+            }
+        }
 })
 
 //Update in stock

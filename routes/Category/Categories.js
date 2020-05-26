@@ -4,6 +4,7 @@ const Category = require('../../model/Category/Category')
 const TopDeals = require('./TopDeals/TopDeals')
 
 const fs = require('fs')
+var slugify = require('slugify')
 
 const multer = require("multer")
 const storage = multer.diskStorage({
@@ -124,43 +125,54 @@ router.delete('/delete/:categoryId',verify,async(req,res)=>{
 //Update a category
 router.patch('/update/:categoryId',upload.single('icon'),verify,async(req,res)=>{
 
-    try {
-
-
-        var path ={}
+   var path ={}
         
-        if(req.file.filename!=undefined){
-         path = "assets/uploads/categories/"+req.file.filename
+        if(req.file!=undefined){
+            
+            path = "assets/uploads/categories/"+req.file.filename
+         const category =await Category.findById(req.params.categoryId)
+         try {
+             if (category.icon != ""){
+                 
+                 fs.unlinkSync('./public/'+category.icon)
+ 
+             }
+             //file removed
+             const updatedCategory =await Category.updateOne(
+                 {_id: req.params.categoryId},
+                 {$set:{   
+                     category_name: req.body.category_name,
+                     status : req.body.status,
+                     icon: path,
+                     slug:slugify(req.body.category_name)
+                 }}
+             )
+             res.status(200).json(updatedCategory)
+           } catch(err) {
+             console.error(err)
+           }
+ 
         }else{
-            path = req.body.icon
+            try{
+                //file removed
+                const updatedCategory =await Category.updateOne(
+                    {_id: req.params.categoryId},
+                    {$set:{   
+                        category_name: req.body.category_name,
+                        status : req.body.status,
+                        slug:slugify(req.body.category_name)
+                    }}
+                )
+                res.status(200).json(updatedCategory)
+              } catch(err) {
+                console.error(err)
+              }
         }
 
 
-        const category =await Category.findById(req.params.categoryId)
-        try {
-            if (category.icon != ""){
-                
-                fs.unlinkSync('./public/'+category.icon)
-
-            }
-            //file removed
-            const updatedCategory =await Category.updateOne(
-                {_id: req.params.categoryId},
-                {$set:{   
-                    category_name: req.body.category_name,
-                    status : req.body.status,
-                    icon: path,
-                }}
-            )
-            res.status(200).json(updatedCategory)
-          } catch(err) {
-            console.error(err)
-          }
-
+    
        
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+   
 })
 
 //Update a category
