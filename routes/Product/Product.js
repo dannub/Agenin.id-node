@@ -82,7 +82,9 @@ router.get('/',async(req,res)=>{
         
             res.status(200).json({
                 products : product,
-                page : numOfpage
+                page : numOfpage,
+                currentPage: page, 
+                totalProducts: numOfProducts
             })
         } catch (error) {
             res.status(400).json({message: error})
