@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     profil:  {
-        type: {},
+        type: String,
         required: true,
     },
     bukti: {
@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         required: true,
+    },
+    lastseen: {
+        type: Date,
+        default: Date.now
     },
     my_addresses: [],
     my_carts: [],

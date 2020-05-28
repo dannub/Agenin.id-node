@@ -279,7 +279,7 @@ router.get('/:topdealId',async(req,res)=>{
                     localField: 'grid_view.product_ID', 
                     foreignField: 'incharge',
                  
-                    as: "grid_view"
+                    as: "grid_view_info"
                 }
          },
          {
@@ -289,7 +289,7 @@ router.get('/:topdealId',async(req,res)=>{
                     localField: 'horisontal_view.product_ID', 
                     foreignField: 'incharge',
                  
-                    as: "horisontal_view"
+                    as: "horisontal_view_info"
                 }
          },
             {
@@ -301,14 +301,20 @@ router.get('/:topdealId',async(req,res)=>{
                    " _id":1,
                    "view_type":1,
                    "grid_view._id": 1,
-                    "grid_view.image": 1,
-                    "grid_view.title_product":1,
-                    "grid_view.price":1,
-                    "horisontal_view._id":1,
-                    "horisontal_view.image":1,
-                    "horisontal_view.title_product":1,
-                    "horisontal_view.price":1,
-                    "horisontal_view.cutted_price":1,
+                   "grid_view.product_ID": 1,
+                   "grid_view_info._id": 1,
+                    "grid_view_info.image": 1,
+                    "grid_view_info.title_product":1,
+                    "grid_view_info.price":1,
+                    "grid_view_info.incharge":1,
+                    "horisontal_view._id": 1,
+                   "horisontal_view.product_ID": 1,
+                    "horisontal_view_info._id":1,
+                    "horisontal_view_info.incharge":1,
+                    "horisontal_view_info.image":1,
+                    "horisontal_view_info.title_product":1,
+                    "horisontal_view_info.price":1,
+                    "horisontal_view_info.cutted_price":1,
                     "layout_background":1,
                     "title_background":1,
                     "background":1,
@@ -318,9 +324,67 @@ router.get('/:topdealId',async(req,res)=>{
                 }
                 
             },
+            
+            {"$unwind":
+            {
+                path: "$grid_view",
+                preserveNullAndEmptyArrays: true
+              }
+            }, 
+            {"$unwind":
+            {
+                path: "$grid_view_info",
+                preserveNullAndEmptyArrays: true
+              }
+            }, 
+            {"$unwind":
+                {
+                    path: "$horisontal_view",
+                    preserveNullAndEmptyArrays: true
+                }
+            }, 
+            {"$unwind":
+                {
+                    path: "$horisontal_view_info",
+                    preserveNullAndEmptyArrays: true
+                }
+            }, 
+            { "$group": { 
+                "_id": "$_id",
+                "top_id": { "$first":"$top_id"},
+                "status": { "$first":"$status"},
+                "slug": { "$first":"$slug"},
+                "layout_background": { "$first":"$layout_background"},
+                "title_background": { "$first":"$title_background"},
+                "view_type": { "$first":"$view_type"},
+                "background": { "$first":"$background"},
+                "strip_ad_banner": { "$first":"$strip_ad_banner"},
+                "move_banner": { "$first":"$move_banner"},
+                "grid_view": { "$push": {
+                    "$cond": [
+                        { "$eq": [ "$grid_view.product_ID", "$grid_view_info.incharge" ] },
+                        { "_id":"$grid_view._id",
+                          "product_ID": "$grid_view_info._id",
+                          "title_product": "$grid_view_info.title_product",
+                          "price": "$grid_view_info.price",
+                          "image": "$grid_view_info.image",
+                        },"$$REMOVE"]
+                }},
+                "horisontal_view": { "$push": {
+                    "$cond": [
+                        { "$eq": [ "$horisontal_view.product_ID", "$horisontal_view_info.incharge" ] },
+                        { "_id":"$horisontal_view._id",
+                          "product_ID": "$horisontal_view_info._id",
+                          "title_product": "$horisontal_view_info.title_product",
+                          "price": "$horisontal_view_info.price",
+                          "image": "$horisontal_view_info.image",
+                        },"$$REMOVE"]
+                }},
+
+            }},
             {
                 "$addFields": {
-                    "grid_view":   { $cond : [ { $eq : [ "$grid_view", [] ] },"$$REMOVE", 
+                    "grid_view":   { $cond : [ { $eq : [ { $arrayElemAt: [ "$grid_view", 0 ] }, {} ] },"$$REMOVE", 
                      {
                       "$map": {
                         "input": "$grid_view",
@@ -328,19 +392,26 @@ router.get('/:topdealId',async(req,res)=>{
                         "in": {
                           
                           "_id": "$$g._id",
+                          "product_ID":"$$g.product_ID",
                           "title_product":"$$g.title_product",
                           "price":"$$g.price",
                           "image": {'$arrayElemAt': ['$$g.image', 0] } 
                         }
                       }
                     } ]},
-                    "horisontal_view":  { $cond : [ { $eq : [ "$horisontal_view", [] ] },"$$REMOVE", 
+                    "layout_background":   { $cond : [ { $eq : [ "$layout_background", null ] },"$$REMOVE", "$layout_background"]},
+                    "title_background":   { $cond : [ { $eq : [ "$title_background", null ] },"$$REMOVE", "$title_background"]},
+                    "background":   { $cond : [ { $eq : [ "$background", null ] },"$$REMOVE", "$background"]},
+                    "strip_ad_banner":   { $cond : [ { $eq : [ "$strip_ad_banner", null ] },"$$REMOVE", "$strip_ad_banner"]},
+                    "move_banner":   { $cond : [ { $eq : [ "$move_banner", null ] },"$$REMOVE", "$move_banner"]},
+                    "horisontal_view":  { $cond : [ { $eq : [ { $arrayElemAt: [ "$horisontal_view", 0 ] }, {} ] },"$$REMOVE", 
                     {
                         "$map": {
                           "input": "$horisontal_view",
                           "as": "h",
                           "in": {
                             "_id": "$$h._id",
+                            "product_ID":"$$h.product_ID",
                             "title_product":"$$h.title_product",
                             "price":"$$h.price",
                             "cutted_price":"$$h.cutted_price",
@@ -366,7 +437,8 @@ router.get('/:topdealId',async(req,res)=>{
                     "_id":0
                    
                     }
-                }
+                },
+               
     ])
     .exec((err, result) => {
         if (err) throw res.status(400).json({message: error});

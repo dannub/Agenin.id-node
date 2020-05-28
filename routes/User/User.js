@@ -87,7 +87,7 @@ router.post('/register',upload_bukti.fields([
         email: req.body.email,
         name_refferal: req.body.name_refferal,
         password: hashPassword,
-        profil: {},
+        profil: "",
         bukti: "assets/uploads/bukti/daftar/"+req.files.bukti[0].filename,
         bukti_tgl: req.body.bukti_tgl,
         bukti_bank: req.body.bukti_bank,
