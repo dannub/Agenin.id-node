@@ -130,6 +130,7 @@ router.get('/',async(req,res)=>{
                     "layout_background":1,
                     "title_background":1,
                     "background":1,
+                    "date":1,
                     "strip_ad_banner":1,
                         
 
@@ -384,7 +385,8 @@ router.get('/:topdealId',async(req,res)=>{
             }},
             {
                 "$addFields": {
-                    "grid_view":   { $cond : [ { $eq : [ { $arrayElemAt: [ "$grid_view", 0 ] }, {} ] },"$$REMOVE", 
+                    "grid_view":   { $cond : [ { $eq : [ { $arrayElemAt: [ "$grid_view", 0 ] }, {} ] },
+                    { $cond : [ { $eq : ["$view_type", 2] } ,[],"$$REMOVE"]}, 
                      {
                       "$map": {
                         "input": "$grid_view",
@@ -404,7 +406,8 @@ router.get('/:topdealId',async(req,res)=>{
                     "background":   { $cond : [ { $eq : [ "$background", null ] },"$$REMOVE", "$background"]},
                     "strip_ad_banner":   { $cond : [ { $eq : [ "$strip_ad_banner", null ] },"$$REMOVE", "$strip_ad_banner"]},
                     "move_banner":   { $cond : [ { $eq : [ "$move_banner", null ] },"$$REMOVE", "$move_banner"]},
-                    "horisontal_view":  { $cond : [ { $eq : [ { $arrayElemAt: [ "$horisontal_view", 0 ] }, {} ] },"$$REMOVE", 
+                    "horisontal_view":  { $cond : [ { $eq : [ { $arrayElemAt: [ "$horisontal_view", 0 ] }, {} ] },
+                    { $cond : [ { $eq : ["$view_type", 3] } ,[],"$$REMOVE"]},  
                     {
                         "$map": {
                           "input": "$horisontal_view",
