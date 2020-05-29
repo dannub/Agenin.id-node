@@ -130,7 +130,6 @@ router.get('/',async(req,res)=>{
                     "layout_background":1,
                     "title_background":1,
                     "background":1,
-                    "date":1,
                     "strip_ad_banner":1,
                         
 
@@ -186,6 +185,7 @@ router.get('/',async(req,res)=>{
                    
                     }
                 }
+                
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});

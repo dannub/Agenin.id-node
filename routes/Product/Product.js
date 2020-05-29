@@ -147,10 +147,15 @@ router.get('/search/',async(req,res)=>{
 
 
 //SUBMITS A Product
-router.post('/create',upload.any(),verify,async(req,res)=>{
+router.post('/create',upload.fields([
+    {
+    name: 'image'
+  }]),verify,async(req,res)=>{
+
+
 
     var imageArray = []
-    req.files.forEach(function(image) {
+    req.files.image.forEach(function(image) {
          imageArray.push("assets/uploads/products/"+image.filename)
         /* etc etc */ })
     const product = new Products({
@@ -244,7 +249,10 @@ router.delete('/delete/:productId',verify,async(req,res)=>{
 })
 
 //Update a category
-router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
+router.patch('/update/:productId',upload.fields([
+    {
+    name: 'image'
+  }]),verify,async(req,res)=>{
 
         if(req.files.image!=undefined){
                 
@@ -260,7 +268,7 @@ router.patch('/update/:productId',upload.any(),verify,async(req,res)=>{
 
             
                 var imageArray = []
-                req.files.forEach(function(image) {
+                req.files.image.forEach(function(image) {
                     imageArray.push("assets/uploads/products/"+image.filename)
                     /* etc etc */ })
                 //file removed
