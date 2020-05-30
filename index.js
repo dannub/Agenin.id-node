@@ -32,6 +32,7 @@ mongoose.connect(
 
 //Middlewares
 app.use(cors())
+app.options('*', cors())
 app.use('/assets/uploads/categories/',express.static('public/assets/uploads/categories'));
 app.use('/assets/uploads/products/',express.static('public/assets/uploads/products'));
 app.use('/assets/uploads/item/',express.static('public/assets/uploads/item'));
