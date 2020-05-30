@@ -4,8 +4,11 @@ const conn = require('./connection').connect
 //const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
-const cors = require('cors')
+// const cors = require('cors')
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
+io.set('origins', '*:*');
 
 
 
@@ -51,8 +54,8 @@ mongoose.connect(
 
 
 //Middlewares
-app.use(cors())
-app.options('*', cors())
+// app.use(cors())
+// app.options('*', cors())
 app.use('/assets/uploads/categories/',express.static('public/assets/uploads/categories'));
 app.use('/assets/uploads/products/',express.static('public/assets/uploads/products'));
 app.use('/assets/uploads/item/',express.static('public/assets/uploads/item'));
@@ -77,3 +80,11 @@ app.use('/api/products',productRoute);
 app.listen(process.env.PORT || 8000, () => {
     console.log(`Server Up and running`);
 });
+
+
+io.on('connection', function (socket) {
+    socket.emit('news', { hello: 'world' });
+    socket.on('my other event', function (data) {
+      console.log(data);
+    });
+  });
