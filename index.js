@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+var cors_proxy = require('cors-anywhere');
 const conn = require('./connection').connect
 //const dotenv = require('dotenv')
 const mongoose = require('mongoose');
@@ -27,12 +28,12 @@ app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
     res.header('Access-Control-Expose-Headers', 'Content-Length');
     res.header('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, X-Requested-With, Range');
-    if (req.method === 'OPTIONS') {
-      return res.send(200);
-    } else {
-      return next();
-    }
+    
+    next();
   });
+
+  
+
 
 //Connect to DB
 mongoose.connect(
@@ -71,20 +72,31 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.json());
 
+
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+});
+
 //Route Middlewares
 app.use('/api/user',userRoute);
 app.use('/api/video',videoRoute);
 app.use('/api/categories',categoryRoute);
 app.use('/api/products',productRoute);
 
+
+
 app.listen(process.env.PORT || 8000, () => {
     console.log(`Server Up and running`);
 });
 
+cors_proxy.createServer({
+  originWhitelist: [], // Allow all origins
+  requireHeader: ['origin', 'x-requested-with'],
+  removeHeaders: ['cookie', 'cookie2']
+}).listen(port, host, function() {
+  console.log('Running CORS Anywhere on ' + host + ':' + port);
+});
 
-io.on('connection', function (socket) {
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-      console.log(data);
-    });
-  });
