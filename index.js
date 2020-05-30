@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-var cors_proxy = require('cors-anywhere');
+
 const conn = require('./connection').connect
 //const dotenv = require('dotenv')
 const mongoose = require('mongoose');
@@ -32,7 +32,6 @@ app.use(function(req, res, next) {
     next();
   });
 
-  
 
 
 //Connect to DB
@@ -87,16 +86,7 @@ app.use('/api/categories',categoryRoute);
 app.use('/api/products',productRoute);
 
 
-
 app.listen(process.env.PORT || 8000, () => {
     console.log(`Server Up and running`);
-});
-
-cors_proxy.createServer({
-  originWhitelist: [], // Allow all origins
-  requireHeader: ['origin', 'x-requested-with'],
-  removeHeaders: ['cookie', 'cookie2']
-}).listen(port, host, function() {
-  console.log('Running CORS Anywhere on ' + host + ':' + port);
 });
 
