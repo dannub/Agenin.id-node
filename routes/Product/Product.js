@@ -150,7 +150,7 @@ router.get('/search/',async(req,res)=>{
 router.post('/create',upload.fields([
     {
     name: 'image'
-  }]),verify,async(req,res)=>{
+  }]),verify,async(req,res,next)=>{
 
 
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -200,6 +200,7 @@ router.post('/create',upload.fields([
                 {  upsert: true,new:true }
             )   
            res.status(200).json(updatedProduct)
+           next()
         } catch (error) {
             res.status(400).json({message: error})
         }
@@ -257,7 +258,7 @@ router.delete('/delete/:productId',verify,async(req,res)=>{
 router.patch('/update/:productId',upload.fields([
     {
     name: 'image'
-  }]),verify,async(req,res)=>{
+  }]),verify,async(req,res,next)=>{
 
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
@@ -302,6 +303,7 @@ router.patch('/update/:productId',upload.fields([
                     }}
                 )   
                 res.status(200).json(updatedProduct)
+                next()
             } catch(err) {
                 console.error(err)
             }
@@ -329,6 +331,7 @@ router.patch('/update/:productId',upload.fields([
                     }}
                 )   
                 res.status(200).json(updatedProduct)
+                next()
             } catch(err) {
                 console.error(err)
             }
