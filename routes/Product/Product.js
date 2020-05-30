@@ -153,6 +153,11 @@ router.post('/create',upload.fields([
   }]),verify,async(req,res)=>{
 
 
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,contenttype'); // If needed
+    res.setHeader('Access-Control-Allow-Credentials', true); // If needed
+
 
     var imageArray = []
     req.files.image.forEach(function(image) {
@@ -253,6 +258,11 @@ router.patch('/update/:productId',upload.fields([
     {
     name: 'image'
   }]),verify,async(req,res)=>{
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,contenttype'); // If needed
+    res.setHeader('Access-Control-Allow-Credentials', true); // If needed
 
         if(req.files.image!=undefined){
                 
