@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi')
+var split = require('string-split');
 
 const isHex = (h) =>{
     var re = /[0-9A-Fa-f]{6}/g;
@@ -23,7 +24,7 @@ function sentenceCase(input, lowercaseBefore) {
   }
   
   function makeSplit(str) {
-    return str.split(/(.*[a-z])(?=[A-Z])/);
+    return split(/(.*[a-z])(?=[A-Z])/,str);
   }
   
   const toTextArea = (str) => {
@@ -35,7 +36,7 @@ function sentenceCase(input, lowercaseBefore) {
   }
 
   const getDate = (date) =>{
-    date = date.split("/").reverse().join("-");
+    date = split("/",date).reverse().join("-");
     if(date!="")
     {
         var d =new Date(date),
