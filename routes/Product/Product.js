@@ -196,6 +196,7 @@ router.post('/create',upload.fields([
  
         const savedProduct = await product.save();
        console.log("hjhjkhjkh")
+       console.log(savedProduct)
         try{
             const updatedProduct =await Products.findOneAndUpdate(
                 {_id: savedProduct._id},
