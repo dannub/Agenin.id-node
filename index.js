@@ -23,7 +23,7 @@ app.use(express.json());
 
 
 app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "https://agenin.herokuapp.com/");
+    res.header('Access-Control-Allow-Origin', "https://dashboard-agenin.netlify.app");
     res.header('Access-Control-Allow-Headers', 'Origin,X-Requested,Content-Type,Accept,Authorization');
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Expose-Headers', 'Content-Length');
