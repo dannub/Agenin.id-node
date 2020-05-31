@@ -81,8 +81,7 @@ const ProductSchema = mongoose.Schema({
         required:true
     },
     decription:{
-        type: String,
-        required:true
+        type: String
     },
     no_pedagang:{
         type: String
