@@ -187,7 +187,7 @@ router.post('/create',upload.fields([
         average_rating: "0.0",
         total_ratings: 0,
         in_stock: true,
-        decription: toTextArea(req.body.decription),
+        description: toTextArea(req.body.description),
         no_pedagang: req.body.no_pedagang
     })
 
@@ -195,7 +195,7 @@ router.post('/create',upload.fields([
  
         const savedProduct = await product.save(function(err, doc) {
             if (err) return console.error(err);
-           
+            console.log(savedProduct._id)
           });
      
         try{
@@ -204,7 +204,11 @@ router.post('/create',upload.fields([
                 {$set:{   
                     incharge: savedProduct._id
                 }},
-                {  upsert: true,new:true }
+                {  upsert: true,new:true },
+                function(err, doc) {
+                    if (err) return console.error(err);
+                   
+                  }
             )   
            res.status(200).json(updatedProduct)
            next()

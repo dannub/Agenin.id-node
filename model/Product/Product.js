@@ -80,7 +80,7 @@ const ProductSchema = mongoose.Schema({
         type: Boolean,
         required:true
     },
-    decription:{
+    description:{
         type: String
     },
     no_pedagang:{
