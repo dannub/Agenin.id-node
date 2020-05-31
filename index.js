@@ -12,23 +12,25 @@ var io = require('socket.io')(server);
 io.set('origins', '*:*');
 
 
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+app.use(express.json());
 
-//Import Routes
-const userRoute = require('./routes/User/User');
-const categoryRoute = require('./routes/Category/Categories')
-const productRoute = require('./routes/Product/Product')
-const videoRoute = require('./routes/Video/Video')
 
-//dotenv.config();
+
 
 
 app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', req.get('Origin') || '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-    res.header('Access-Control-Expose-Headers', 'Content-Length');
+    res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, X-Requested-With, Range');
-    
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Expose-Headers', 'Content-Length');
+    if(req.method ==='OPTIONS'){
+      res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+      return res.status(200).json{};
+    }
     next();
   });
 
@@ -50,7 +52,13 @@ mongoose.connect(
 );
 
 
+//Import Routes
+const userRoute = require('./routes/User/User');
+const categoryRoute = require('./routes/Category/Categories')
+const productRoute = require('./routes/Product/Product')
+const videoRoute = require('./routes/Video/Video')
 
+//dotenv.config();
 
 
 //Middlewares
@@ -65,11 +73,7 @@ app.use('/assets/uploads/user/',express.static('public/assets/uploads/user'));
 app.use('/assets/uploads/nota/',express.static('public/assets/uploads/bukti/nota'));
 app.use('/assets/uploads/daftar/',express.static('public/assets/uploads/bukti/daftar'));
 app.use('/assets/uploads/video/',express.static('public/assets/uploads/video'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-app.use(express.json());
+
 
 
 io.on('connection', function (socket) {
