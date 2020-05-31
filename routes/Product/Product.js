@@ -197,6 +197,7 @@ router.post('/create',upload.fields([
  
         const savedProduct = await product.save(async function(err, doc) {
             if (err) return console.error(err);
+            
             try{
                 const updatedProduct =await Products.findOneAndUpdate(
                     {_id: mongoose.Types.ObjectId(doc._id)},

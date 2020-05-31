@@ -37,21 +37,42 @@ const upload = multer({
 //GET ALL Category
 router.get('/',async(req,res)=>{
 
-    try {
-        //All Category
-        const categories = await Category.find({},
-            {
-                _id:1,
-                category_name:1,
-                icon: 1,
-                status:1,
-                slug: 1,
-            });
-        res.status(200).json(categories)
-   
-    } catch (error) {
-        res.status(400).json({message: error})
+    if(!req.query.isdropdown||req.query.isdropdown==undefined){
+       
+        try {
+            //All Category
+            const categories = await Category.find({},
+                {
+                    _id:1,
+                    category_name:1,
+                    icon: 1,
+                    status:1,
+                    slug: 1,
+                });
+            res.status(200).json(categories)
+    
+        } catch (error) {
+            res.status(400).json({message: error})
+        }
+    }else{
+        try {
+            //All Category
+            const categories = await Category.find({
+                category_name: { $ne: "Home" }
+            },
+                {
+                    _id:1,
+                    category_name:1,
+                    status:1,
+                    slug: 1,
+                }) ;
+            res.status(200).json(categories)
+    
+        } catch (error) {
+            res.status(400).json({message: error})
+        }
     }
+    
 
 })
 
