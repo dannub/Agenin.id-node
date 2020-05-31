@@ -153,14 +153,14 @@ router.post('/create',upload.fields([
   }]),verify,async(req,res,next)=>{
 
 
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Headers', 'Origin,X-Requested,Content-Type,Accept,Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Expose-Headers', 'Content-Length');
-    if(req.method ==='OPTIONS'){
-      res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-      return res.status(200).json({});
-    }
+    // res.header('Access-Control-Allow-Origin', "*");
+    // res.header('Access-Control-Allow-Headers', 'Origin,X-Requested,Content-Type,Accept,Authorization');
+    // res.header('Access-Control-Allow-Credentials', 'true');
+    // res.header('Access-Control-Expose-Headers', 'Content-Length');
+    // if(req.method ==='OPTIONS'){
+    //   res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+    //   return res.status(200).json({});
+    // }
 
     var imageArray = []
     req.files.image.forEach(function(image) {
