@@ -3,6 +3,7 @@ const verify = require('../User/verifytoken')
 const Products = require('../../model/Product/Product')
 const {toTextArea,toTitle} = require('../../validation')
 
+const mongoose = require('mongoose');
 const fs = require('fs')
 
 const multer = require("multer")
@@ -198,7 +199,7 @@ router.post('/create',upload.fields([
             if (err) return console.error(err);
             try{
                 const updatedProduct =await Products.findOneAndUpdate(
-                    {_id: doc._id},
+                    {_id: mongoose.Types.ObjectId(doc._id)},
                     {$set:{   
                         incharge: doc._id
                     }},
