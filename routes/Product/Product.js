@@ -195,7 +195,7 @@ router.post('/create',upload.fields([
 
     try {
  
-        const savedProduct = await product.save(function(err, doc) {
+        const savedProduct = await product.save(async function(err, doc) {
             if (err) return console.error(err);
             try{
                 const updatedProduct =await Products.findOneAndUpdate(
