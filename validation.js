@@ -28,11 +28,11 @@ function sentenceCase(input, lowercaseBefore) {
   }
   
   const toTextArea = (str) => {
-    return breakLine(sentenceCase(makeSplit(str)))
+    return breakLine(sentenceCase(str))
   }
   
   const toTitle = (str) =>{
-    return sentenceCase(makeSplit(str))
+    return sentenceCase(str)
   }
 
   const getDate = (date) =>{
