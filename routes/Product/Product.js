@@ -170,6 +170,7 @@ router.post('/create',upload.fields([
 
         title_product: toTitle(req.body.title_product),
         image: imageArray,
+        incharge:"",
         category: req.body.category,
         price: req.body.price,
         cutted_price: req.body.cutted_price,
