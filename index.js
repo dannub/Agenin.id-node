@@ -5,7 +5,7 @@ const conn = require('./connection').connect
 //const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
-// const cors = require('cors')
+const cors = require('cors')
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
@@ -62,8 +62,8 @@ const videoRoute = require('./routes/Video/Video')
 
 
 //Middlewares
-// app.use(cors())
-// app.options('*', cors())
+app.use(cors())
+app.options('*', cors())
 app.use('/assets/uploads/categories/',express.static('public/assets/uploads/categories'));
 app.use('/assets/uploads/products/',express.static('public/assets/uploads/products'));
 app.use('/assets/uploads/item/',express.static('public/assets/uploads/item'));
