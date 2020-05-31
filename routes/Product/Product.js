@@ -195,7 +195,7 @@ router.post('/create',upload.fields([
  
         const savedProduct = await product.save(function(err, doc) {
             if (err) return console.error(err);
-            console.log(savedProduct)
+            console.log(doc)
           });
      
         try{
