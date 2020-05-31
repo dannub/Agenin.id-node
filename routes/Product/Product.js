@@ -169,7 +169,6 @@ router.post('/create',upload.fields([
     const product = new Products({
 
         title_product: toTitle(req.body.title_product),
-        incharge:"",
         image: imageArray,
         category: req.body.category,
         price: req.body.price,
@@ -201,7 +200,7 @@ router.post('/create',upload.fields([
      
         try{
             const updatedProduct =await Products.findOneAndUpdate(
-                {_id: savedProduct._id},
+                {_id: mongoose.Types.ObjectId(savedProduct._id)},
                 {$set:{   
                     incharge: savedProduct._id
                 }},
