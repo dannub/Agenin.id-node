@@ -195,26 +195,27 @@ router.post('/create',upload.fields([
  
         const savedProduct = await product.save(function(err, doc) {
             if (err) return console.error(err);
-            console.log(doc)
+            
+            try{
+                const updatedProduct =await Products.findOneAndUpdate(
+                    {_id: doc._id},
+                    {$set:{   
+                        incharge: doc._id
+                    }},
+                    {  upsert: true,new:true },
+                    function(err, doc) {
+                        if (err) return console.error(err);
+                       
+                      }
+                )   
+               res.status(200).json(updatedProduct)
+               next()
+            } catch (error) {
+                res.status(400).json({message: error})
+            }
           });
      
-        try{
-            const updatedProduct =await Products.findOneAndUpdate(
-                {_id: mongoose.Types.ObjectId(savedProduct._id)},
-                {$set:{   
-                    incharge: savedProduct._id
-                }},
-                {  upsert: true,new:true },
-                function(err, doc) {
-                    if (err) return console.error(err);
-                   
-                  }
-            )   
-           res.status(200).json(updatedProduct)
-           next()
-        } catch (error) {
-            res.status(400).json({message: error})
-        }
+       
        
     } catch (error) {
         res.status(400).json({message: error})
