@@ -33,8 +33,7 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     profil:  {
-        type: String,
-        required: true,
+        type: String
     },
     bukti: {
         type: String,
