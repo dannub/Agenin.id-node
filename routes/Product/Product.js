@@ -192,6 +192,7 @@ router.post('/create',upload.fields([
     })
 
     try {
+        console.log("uhuihuihuihu")
         const savedProduct = await product.save();
         res.status(200).json(savedProduct)
        
