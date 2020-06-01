@@ -66,6 +66,8 @@ router.post('/register',upload_bukti.fields([
     name: 'bukti'
   }]), async (req, res) => {
     
+    console.log("hjkhjkhjk")
+
     var userCek = {name:req.body.name,email:req.body.email,password:req.body.password}
     //LETS VALIDA TE THE DATA BEFORE WE A USER
     const {error} = registerValidation(userCek)
