@@ -247,6 +247,8 @@ router.delete('/delete/:productId',verify,async(req,res)=>{
         try {
             const product =await Products.findById(req.params.productId)
             try {
+
+
                 for (var i in product.image) {
                     val = product.image[i];
                     fs.unlinkSync('./public/'+val)
@@ -401,6 +403,24 @@ router.patch('/updateInStock/:productId',verify,async(req,res)=>{
         res.status(400).json({message: error})
     }
 })
+
+// var path = require('path');
+// var mime = require('mime');
+// var fs = require('fs');
+
+// app.get('/download', function(req, res){
+
+//   var file = __dirname + '/upload-folder/dramaticpenguin.MOV';
+
+//   var filename = path.basename(file);
+//   var mimetype = mime.lookup(file);
+
+//   res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+//   res.setHeader('Content-type', mimetype);
+
+//   var filestream = fs.createReadStream(file);
+//   filestream.pipe(res);
+// });
 
 
 module.exports = router
