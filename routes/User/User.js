@@ -65,51 +65,96 @@ router.post('/register',upload_bukti.fields([
     {
     name: 'bukti'
   }]), async (req, res) => {
-    
-    console.log("hjkhjkhjk")
+      
 
-    var userCek = {name:req.body.name,email:req.body.email,password:req.body.password}
-    //LETS VALIDA TE THE DATA BEFORE WE A USER
-    const {error} = registerValidation(userCek)
-    if(error) return res.status(400).send(error.details[0].message);
+    var user;
 
+    if(req.query.role=="user"){
+         // var userCek = {name:req.body.name,email:req.body.email,password:req.body.password}
+        //LETS VALIDA TE THE DATA BEFORE WE A USER
+        // const {error} = registerValidation(userCek)
+        // if(error) return res.status(400).send(
+        // {
+        //     error: error.details[0].message,
+        //     message: "Email atau password terlalu pendek"
+        // })
+        //Checking if user is already in database
+        const emailExist = await User.findOne({email: req.body.email,role :req.query.role})
+        if(emailExist) return res.status(400).send('Email already exist');
 
-    //Checking if user is already in database
-    const emailExist = await User.findOne({email: req.body.email})
-    if(emailExist) return res.status(400).send('Email already exist');
+        //Hash password
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(req.body.password,salt)
 
-    //Hash password
-    const salt = await bcrypt.genSalt(10)
-    const hashPassword = await bcrypt.hash(req.body.password,salt)
+        //Create a new user
+      user = new User({
+            token_fb:req.body.token_fb,
+            name: req.body.name,
+            role:"user",
+            email: req.body.email,
+            name_refferal: req.body.name_refferal,
+            password: hashPassword,
+            profil: "",
+            bukti: "assets/uploads/bukti/daftar/"+req.files.bukti[0].filename,
+            bukti_tgl: req.body.bukti_tgl,
+            bukti_bank: req.body.bukti_bank,
+            bukti_an: req.body.bukti_an,
+            status: false,
+            handphone: req.body.handphone,
+            my_addresses: [],
+            my_carts: [],
+            my_notifications: [],
+            my_ratings: [],
+            my_wishlists: [],
+            my_nota: [],
+            
+        });
+    }else{
+     
+          // var userCek = {name:req.body.name,email:req.body.email,password:req.body.password}
+        //LETS VALIDA TE THE DATA BEFORE WE A USER
+        // const {error} = registerValidation(userCek)
+        // if(error) return res.status(400).send(
+        // {
+        //     error: error.details[0].message,
+        //     message: "Email atau password terlalu pendek"
+        // })
+        //Checking if user is already in database
+        const emailExist = await User.findOne({email: req.body.email,role :req.query.role})
+        if(emailExist) return res.status(400).send('Email already exist');
 
-    //Create a new user
-    const user = new User({
-        token_fb:req.body.name,
-        name: req.body.name,
-        email: req.body.email,
-        name_refferal: req.body.name_refferal,
-        password: hashPassword,
-        profil: "",
-        bukti: "assets/uploads/bukti/daftar/"+req.files.bukti[0].filename,
-        bukti_tgl: req.body.bukti_tgl,
-        bukti_bank: req.body.bukti_bank,
-        bukti_an: req.body.bukti_an,
-        status: false,
-        handphone: req.body.handphone,
-        my_addresses: [],
-        my_carts: [],
-        my_notifications: [],
-        my_ratings: [],
-        my_wishlists: [],
-        my_nota: [],
-        
-    });
-    try{
-        const savedUser = await user.save()
-        res.status(200).send({savedUser});
-    }catch(err){
-        res.status(400).send(err);;
+        //Hash password
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(req.body.password,salt)
+
+        //Create a new user
+        user = new User({
+            name: req.body.name,
+            role:"admin",
+            email: req.body.email,
+            password: hashPassword,
+            my_addresses: [],
+            my_carts: [],
+            my_notifications: [],
+            my_ratings: [],
+            my_wishlists: [],
+            my_nota: [],
+            
+        });
     }
+    console.log("jkdfhkhsdj")
+
+   try{
+
+         await user.save(async function(err, doc) {
+            if (err) return  res.status(200).send({err});
+            res.status(200).send({doc});
+        })
+        
+    } catch (error) {
+        res.status(400).json({message: error})
+    }
+
 });
 
 
@@ -167,7 +212,9 @@ router.get('/',verify,async(req,res)=>{
         {
             $gte:  new Date(getDate(req.body.from)+"T00:00:00.000Z"),
             $lt:  new Date(getDate(req.body.to)+"T23:59:59.000Z")
-        }},
+        },
+        role:"user"
+    },
         {
             name:1,
             bukti:1,
@@ -187,6 +234,21 @@ router.get('/',verify,async(req,res)=>{
 
 })
 
+//GET ALL User by date sort status
+router.get('/All',verify,async(req,res)=>{
+
+    try {
+        //All User
+        
+        const users = await User.find({role:"user"},{id:1,name:1,email:1,handphone:1});
+        res.status(200).json(users)
+   
+    } catch (error) {
+        res.status(400).json({message: error})
+    }
+
+})
+
 
 //GET ALL User by date sort status
 router.get('/profil/:userId',verify,async(req,res)=>{
@@ -195,7 +257,9 @@ router.get('/profil/:userId',verify,async(req,res)=>{
         //All User
         
         const users = await User.find(
-            {_id :req.params.userId},
+            {_id :req.params.userId,
+                role:"user"
+            },
         {
             name:1,
             email:1,
@@ -212,7 +276,7 @@ router.get('/profil/:userId',verify,async(req,res)=>{
 
 
 //SPECIFIC User
-router.get('/:userId',verify,async(req,res)=>{
+router.get('/id/:userId',verify,async(req,res)=>{
 
     try {
         const user =await User.findById(req.params.userId)
@@ -265,6 +329,48 @@ router.get('/status/:userId',verify,async(req,res)=>{
     }
 })
 
+//Get status
+router.get('/notifAll',verify,async(req,res)=>{
+
+    try {
+        //All Cart
+
+   
+                   await User.aggregate([
+                    {"$unwind":"$my_notifications"}, 
+                    {
+                        $match: {role:"user"}
+                      },
+                     
+                    { $replaceRoot: { newRoot: { $mergeObjects: [ { user_id: "$_id"},"$my_notifications" ] }}},
+                     { 
+                            "$group": {
+                                _id : "$user_id",
+                                user_id: { "$first": "$user_id" },
+                                notif: { $push: "$$ROOT"},
+                            }
+                        },
+                        
+                        { $project: {  _id: 0} }
+        
+        
+                ])
+                .exec((err, result) => {
+                    if (err) throw res.status(400).json({message: err});
+                    res.status(200).json(result)
+                });
+              
+
+      
+        //res.status(200).json(topdeals[0].top_deals)
+   
+    } catch (error) {
+        res.status(400).json({message: error})
+    }
+})
+
+
+
 //Update status
 router.patch('/status/update/:userId',verify,async(req,res)=>{
 
@@ -275,13 +381,43 @@ router.patch('/status/update/:userId',verify,async(req,res)=>{
 
             const updateStatus =  await  User.updateOne(
                 {
-                    _id : req.params.userId
+                    _id : req.params.userId,
+                    role:"user"
                 }
                 ,{ $set:  {'status' : true }}
                ).exec()
             
             
                 res.status(200).json(updateStatus)
+            
+          } catch(err) {
+            console.error(err)
+          }
+
+       
+    } catch (error) {
+        res.status(400).json({message: error})
+    }
+})
+
+//Update token
+router.patch('/token/update/:userId/:token',verify,async(req,res)=>{
+
+    try {
+
+
+        try {
+
+            const updateToken =  await  User.updateOne(
+                {
+                    _id : req.params.userId,
+                    role:"user"
+                }
+                ,{ $set:  {'token_fb' : req.params.token }}
+               ).exec()
+            
+            
+                res.status(200).json(updateToken)
             
           } catch(err) {
             console.error(err)

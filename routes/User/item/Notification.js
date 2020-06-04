@@ -169,42 +169,38 @@ router.post('/create',upload.fields([
             timeToLive: 60*60*24
         }
 
-        try {
-            
             try {
                 const addNotification =  await User.updateMany(
-                {},
+                { role:"user"},
                 { $push: { my_notifications: notification } }
                 ,
                 {upsert:false,
                 multi:true}
-            ).find({}) .exec(async(err, result) => {
+            ).exec(async(err, result) => {
                 if (err) throw res.status(400).json({message: err})
-    
-                result.forEach(async function(notif) {
-                    admin.messaging().sendToDevice(notif.token_fb, payload, options)
-                    .then(function(response) {
-                      console.log("Successfully sent message:", response);
-                    })
-                    .catch(function(error) {
-                      console.log("Error sending message:", error);
-                    });
-                  
-                })
                 
+                await User.find({ role:"user"}) .exec(async(err, result) => {
+                    if (err) throw res.status(400).json({message: err})
+                    res.status(200).json(result)
+                    result.forEach(async function(notif) {
+                        admin.messaging().sendToDevice(notif.token_fb, payload, options)
+                        .then(function(response) {
+                          console.log("Successfully sent message:", response);
+                        })
+                        .catch(function(error) {
+                          console.log("Error sending message:", error);
+                        });
+                      
+                    })
+                    
+                });
             });
-
-           
           
           
-
-                res.status(200).json(addNotification)
             } catch (error) {
                 res.status(400).json({message: error})
             }
-        } catch (error) {
-            res.status(400).json({message: error})
-        }
+      
 
 
     
@@ -253,23 +249,28 @@ router.post('/create/:userIdNotif',upload.fields([
                 ,
                 {upsert:false,
                 multi:true}
-            ).find({ _id:mongoose.Types.ObjectId(req.params.userIdNotif)}) .exec(async(err, result) => {
+            ).exec(async(err, result) => {
                 if (err) throw res.status(400).json({message: err})
-    
-                result.forEach(async function(notif) {
-                    admin.messaging().sendToDevice(notif.token_fb, payload, options)
-                    .then(function(response) {
-                      console.log("Successfully sent message:", response);
-                    })
-                    .catch(function(error) {
-                      console.log("Error sending message:", error);
-                    });
-                  
-                })
                 
-            });;
+                await User.find({ _id:mongoose.Types.ObjectId(req.params.userIdNotif)}) .exec(async(err, result) => {
+                    if (err) throw res.status(400).json({message: err})
+                    res.status(200).json(result)
+                    result.forEach(async function(notif) {
+                        admin.messaging().sendToDevice(notif.token_fb, payload, options)
+                        .then(function(response) {
+                          console.log("Successfully sent message:", response);
+                        })
+                        .catch(function(error) {
+                          console.log("Error sending message:", error);
+                        });
+                      
+                    })
+                    
+                });;
+                
+            })
 
-                res.status(200).json(addNotification)
+                
             } catch (error) {
                 res.status(400).json({message: error})
             }

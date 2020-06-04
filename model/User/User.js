@@ -2,14 +2,18 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     token_fb: {
-        type: String,
-        required: true
+        type: String
+      
     },
     name: {
         type: String,
         required: true,
         min: 6,
         max: 255
+    },
+    role: {
+        type: String,
+        required: true
     },
     email: {
         type: String,
@@ -19,9 +23,6 @@ const userSchema = new mongoose.Schema({
     },
     name_refferal: {
         type: String,
-        required: true,
-        min: 6,
-        max: 255
     },
     password:{
         type: String,
@@ -36,24 +37,19 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     bukti: {
-        type: String,
-        required: true
+        type: String
     },
     bukti_tgl: {
-        type: String,
-        required: true
+        type: String
     },
     bukti_bank: {
-        type: String,
-        required: true
+        type: String
     },
     bukti_an: {
-        type: String,
-        required: true
+        type: String
     },
     status: {
-        type: Boolean,
-        required: true,
+        type: Boolean
     },
     lastseen: {
         type: Date,
