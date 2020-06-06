@@ -142,13 +142,23 @@ router.post('/register',upload_bukti.fields([
             
         });
     }
-    console.log("jkdfhkhsdj")
 
    try{
 
          await user.save(async function(err, doc) {
-            if (err) return  res.status(200).send({err});
-            res.status(200).send({doc});
+            if (err) return  res.status(400).send({err});
+
+            const token = jwt.sign({_id: doc._id}, process.env.TOKEN_SECRET)
+            user= {
+
+                "_id": doc._id,
+                "name": doc.name,
+                "email": doc.email,
+                "status": doc.status,
+                "token":token
+            }
+            res.status(200).header('auth-token',token).send(user)
+            next()
         })
         
     } catch (error) {
@@ -160,36 +170,72 @@ router.post('/register',upload_bukti.fields([
 
 //Login
 
-router.post('/login', async (req, res,next) => {
-    //LETS VALIDA TE THE DATA BEFORE WE A USER
-    var userCek = {email:req.body.email,password:req.body.password}
-   
-    const {error} = loginValidation(userCek)
-    if(error) return res.status(400).send(error.details[0].message);
+router.post('/login/', async (req, res,next) => {
 
 
-    //Checking if the email exixsts
-    var user = await User.findOne({email: req.body.email})
-    if(!user) return res.status(400).send('Email is not found');
+    if(req.query.role=="user"){
+        //LETS VALIDA TE THE DATA BEFORE WE A USER
+        var userCek = {email:req.body.email,password:req.body.password}
+    
+        const {error} = loginValidation(userCek)
+        if(error) return res.status(400).send(error.details[0].message);
 
-    //Password is correct
-    const validPass = await bcrypt.compare(req.body.password, user.password)
-    if(!validPass) return res.status(400).send('Invalid password');
+
+        //Checking if the email exixsts
+        var user = await User.findOne({email: req.body.email,role:"user"})
+        if(!user) return res.status(400).send('Email is not found');
+
+        //Password is correct
+        const validPass = await bcrypt.compare(req.body.password, user.password)
+        if(!validPass) return res.status(400).send('Invalid password');
 
 
-    //Create and assign a token
-    const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
-    user= {
+        //Create and assign a token
+        const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
+        user= {
 
-        "_id": user._id,
-        "name": user.name,
-        "email": user.email,
-        "status": user.status,
-        "token":token
+            "_id": user._id,
+            "name": user.name,
+            "email": user.email,
+            "profil": user.profil,
+            "status": user.status,
+            "role": user.role,
+            "token":token
+        }
+        res.status(200).header('auth-token',token).send(user)
+
+        next()
+    }else{
+        //LETS VALIDA TE THE DATA BEFORE WE A USER
+        var userCek = {email:req.body.email,password:req.body.password}
+    
+        const {error} = loginValidation(userCek)
+        if(error) return res.status(400).send(error.details[0].message);
+
+
+        //Checking if the email exixsts
+        var user = await User.findOne({email: req.body.email,role:"admin"})
+        if(!user) return res.status(400).send('Email is not found');
+
+        //Password is correct
+        const validPass = await bcrypt.compare(req.body.password, user.password)
+        if(!validPass) return res.status(400).send('Invalid password');
+
+
+        //Create and assign a token
+        const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
+        user= {
+
+            "_id": user._id,
+            "name": user.name,
+            "email": user.email,
+            "status": user.status,
+            "token":token
+        }
+        res.status(200).header('auth-token',token).send(user)
+
+        next()
     }
-    res.status(200).header('auth-token',token).send(user)
-
-    next()
 
 });
 
