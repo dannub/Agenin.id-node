@@ -63,6 +63,7 @@ router.get('/',async(req,res)=>{
                 {
                     _id:1,
                     category_name:1,
+                    icon: 1,
                     status:1,
                     slug: 1,
                 }) ;
