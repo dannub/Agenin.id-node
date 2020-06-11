@@ -19,6 +19,10 @@ const GridViewsSchema = mongoose.Schema({
         type: Number,
         required:true
     },
+    index:{
+        type: Number,
+        required:true
+    },
     date: {
         type: Date,
         default: Date.now

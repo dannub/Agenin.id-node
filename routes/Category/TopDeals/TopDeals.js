@@ -89,102 +89,211 @@ router.get('/',async(req,res)=>{
                 $match: { slug : req.params.slugCategory }
               },
               
-           { $replaceRoot: { newRoot:  { $mergeObjects: [ { top_id: "$_id",status: "$status",slug: "$slug"},"$top_deals" ] } }},
-             {
-                $lookup:
-                    {
-                        from: "products",
-                        localField: 'grid_view.product_ID', 
-                        foreignField: 'incharge',
-                     
-                        as: "grid_view"
-                    }
-             },
-             {
-                $lookup:
-                    {
-                        from: "products",
-                        localField: 'horisontal_view.product_ID', 
-                        foreignField: 'incharge',
-                     
-                        as: "horisontal_view"
-                    }
-             },
-                {
-                    $project: { 
-                    "top_id":1,
-                    "status":1,
-                    "slug":1,
-                    "move_banner":1,
-                    "_id":1,
-                    "view_type":1,
-                    "grid_view._id": 1,
-                    "grid_view.image": 1,
-                    "grid_view.title_product":1,
-                    "grid_view.price":1,
-                    "horisontal_view._id":1,
-                    "horisontal_view.image":1,
-                    "horisontal_view.title_product":1,
-                    "horisontal_view.price":1,
-                    "horisontal_view.cutted_price":1,
-                    "layout_background":1,
-                    "title_background":1,
-                    "background":1,
-                    "strip_ad_banner":1,
-                        
-
-                    }
-                    
-                },
-                {
-                    "$addFields": {
-                        "grid_view":   { $cond : [ { $eq : [ "$grid_view", [] ] },"$$REMOVE", 
-                         {
-                          "$map": {
-                            "input": { $slice: [ "$grid_view", 8 ] },
-                            "as": "g",
-                            "in": {
+              { $replaceRoot: { newRoot:  { $mergeObjects: [ { top_id: "$_id",status: "$status",slug: "$slug"},"$top_deals" ] } }},
+              {
+              $lookup:
+                  {
+                      from: "products",
+                      localField: 'grid_view.product_ID', 
+                      foreignField: 'incharge',
+                   
+                      as: "grid_view_info"
+                  }
+           },
+           {
+              $lookup:
+                  {
+                      from: "products",
+                      localField: 'horisontal_view.product_ID', 
+                      foreignField: 'incharge',
+                   
+                      as: "horisontal_view_info"
+                  }
+           },
+              {
+                  $project: { 
+                      "top_id":1,
+                      "status":1,
+                      "slug":1,
+                     "move_banner":1,
+                     " _id":1,
+                     "index":1,
+                     "view_type":1,
+                     "grid_view._id": 1,
+                     "grid_view.product_ID": 1,
+                     "grid_view_info._id": 1,
+                      "grid_view_info.image": 1,
+                      "grid_view_info.title_product":1,
+                      "grid_view_info.price":1,
+                      "grid_view_info.cutted_price":1,
+                      "grid_view_info.incharge":1,
+                      "grid_view_info.average_rating":1,
+                      "grid_view_info.total_ratings":1,
+                      "grid_view_info.in_stock":1,
+                      "grid_view_info.satuan":1,
+                      "horisontal_view._id": 1,
+                     "horisontal_view.product_ID": 1,
+                      "horisontal_view_info._id":1,
+                      "horisontal_view_info.incharge":1,
+                      "horisontal_view_info.image":1,
+                      "horisontal_view_info.title_product":1,
+                      "horisontal_view_info.price":1,
+                      "horisontal_view_info.cutted_price":1,
+                      "horisontal_view_info.average_rating":1,
+                      "horisontal_view_info.total_ratings":1,
+                      "horisontal_view_info.in_stock":1,
+                      "horisontal_view_info.satuan":1,
+                      "layout_background":1,
+                      "title_background":1,
+                      "background":1,
+                      "strip_ad_banner":1,
+                      
+  
+                  }
+                  
+              },
+              
+              {"$unwind":
+              {
+                  path: "$grid_view",
+                  preserveNullAndEmptyArrays: true
+                }
+              }, 
+              {"$unwind":
+              {
+                  path: "$grid_view_info",
+                  preserveNullAndEmptyArrays: true
+                }
+              }, 
+              {"$unwind":
+                  {
+                      path: "$horisontal_view",
+                      preserveNullAndEmptyArrays: true
+                  }
+              }, 
+              {"$unwind":
+                  {
+                      path: "$horisontal_view_info",
+                      preserveNullAndEmptyArrays: true
+                  }
+              }, 
+              { "$group": { 
+                  "_id": "$_id",
+                  "top_id": { "$first":"$top_id"},
+                  "status": { "$first":"$status"},
+                  "slug": { "$first":"$slug"},
+                  "index": { "$first":"$index"},
+                  "layout_background": { "$first":"$layout_background"},
+                  "title_background": { "$first":"$title_background"},
+                  "view_type": { "$first":"$view_type"},
+                  "background": { "$first":"$background"},
+                  "strip_ad_banner": { "$first":"$strip_ad_banner"},
+                  "move_banner": { "$first":"$move_banner"},
+                  "grid_view": { "$push": {
+                      "$cond": [
+                          { "$eq": [ "$grid_view.product_ID", "$grid_view_info.incharge" ] },
+                          { "_id":"$grid_view._id",
+                            "product_ID": "$grid_view_info._id",
+                            "title_product": "$grid_view_info.title_product",
+                            "price": "$grid_view_info.price",
+                            "cutted_price": "$grid_view_info.cutted_price",
+                            "image": "$grid_view_info.image",
+                            "average_rating": "$grid_view_info.average_rating",
+                            "total_ratings": "$grid_view_info.total_ratings",
+                            "satuan": "$grid_view_info.satuan",
+                            "in_stock": "$grid_view_info.in_stock"
+                          },"$$REMOVE"]
+                  }},
+                  "horisontal_view": { "$push": {
+                      "$cond": [
+                          { "$eq": [ "$horisontal_view.product_ID", "$horisontal_view_info.incharge" ] },
+                          { "_id":"$horisontal_view._id",
+                            "product_ID": "$horisontal_view_info._id",
+                            "title_product": "$horisontal_view_info.title_product",
+                            "price": "$horisontal_view_info.price",
+                            "cutted_price": "$horisontal_view_info.cutted_price",
+                            "image": "$horisontal_view_info.image",
+                            "average_rating": "$horisontal_view_info.average_rating",
+                            "total_ratings": "$horisontal_view_info.total_ratings",
+                            "satuan": "$horisontal_view_info.satuan",
+                            "in_stock": "$horisontal_view_info.in_stock"
+                          },"$$REMOVE"]
+                  }},
+  
+              }},
+              {
+                  "$addFields": {
+                      "grid_view":   { $cond : [ { $eq : [ { $arrayElemAt: [ "$grid_view", 0 ] }, {} ] },
+                      { $cond : [ { $eq : ["$view_type", 2] } ,[],"$$REMOVE"]}, 
+                       {
+                        "$map": {
+                          "input": "$grid_view",
+                          "as": "g",
+                          "in": {
+                            
+                            "_id": "$$g._id",
+                            "product_ID":"$$g.product_ID",
+                            "title_product":"$$g.title_product",
+                            "price":"$$g.price",
+                            "cutted_price":"$$g.cutted_price",
+                            "average_rating": "$$g.average_rating",
+                            "total_ratings": "$$g.total_ratings" ,
+                            "satuan": "$$g.satuan" ,
+                            "in_stock": "$$g.in_stock" ,
+                            "image": {'$arrayElemAt': ['$$g.image', 0] ,
                               
-                              "_id": "$$g._id",
-                              "title_product":"$$g.title_product",
-                              "price":"$$g.price",
-                              "image": {'$arrayElemAt': ['$$g.image', 0] } 
+                        } 
+                          }
+                        }
+                      } ]},
+                      "layout_background":   { $cond : [ { $eq : [ "$layout_background", null ] },"$$REMOVE", "$layout_background"]},
+                      "title_background":   { $cond : [ { $eq : [ "$title_background", null ] },"$$REMOVE", "$title_background"]},
+                      "background":   { $cond : [ { $eq : [ "$background", null ] },"$$REMOVE", "$background"]},
+                      "strip_ad_banner":   { $cond : [ { $eq : [ "$strip_ad_banner", null ] },"$$REMOVE", "$strip_ad_banner"]},
+                      "move_banner":   { $cond : [ { $eq : [ "$move_banner", null ] },"$$REMOVE", "$move_banner"]},
+                      "horisontal_view":  { $cond : [ { $eq : [ { $arrayElemAt: [ "$horisontal_view", 0 ] }, {} ] },
+                      { $cond : [ { $eq : ["$view_type", 3] } ,[],"$$REMOVE"]},  
+                      {
+                          "$map": {
+                            "input": "$horisontal_view",
+                            "as": "h",
+                            "in": {
+                              "_id": "$$h._id",
+                              "product_ID":"$$h.product_ID",
+                              "title_product":"$$h.title_product",
+                              "price":"$$h.price",
+                              "cutted_price":"$$h.cutted_price",
+                              "average_rating": "$$h.average_rating",
+                              "total_ratings": "$$h.total_ratings"  ,
+                              "satuan": "$$h.satuan" ,
+                              "in_stock": "$$h.in_stock" ,
+                              "image": {'$arrayElemAt': ['$$h.image', 0]
+                             
+                            } 
                             }
                           }
-                        } ]},
-                        "horisontal_view":  { $cond : [ { $eq : [ "$horisontal_view", [] ] },"$$REMOVE", 
-                        {
-                            "$map": {
-                              "input": { $slice: [ "$horisontal_view", 8 ] },
-                              "as": "h",
-                              "in": {
-                                "_id": "$$h._id",
-                                "title_product":"$$h.title_product",
-                                "price":"$$h.price",
-                                "cutted_price":"$$h.cutted_price",
-                                "image":{'$arrayElemAt': ['$$h.image', 0] } 
-                              }
-                            }
-                         } ]}
-                    }
-                },
-                { 
-                    "$group": {
-                        _id : "$top_id",
-                        status: { "$first": "$status" },
-                        category: { "$first": "$slug" },
-                        top_deals: { $push: "$$ROOT"}
-                    }
-                },
-                {
-                    $project: { 
-                    "top_deals.top_id":0,
-                    "top_deals.status":0,
-                    "top_deals.slug":0,
-                    "_id":0
-                   
-                    }
-                }
+                       } ]}
+                  }
+              },
+              { $sort : { index : 1, date: 1 } },
+                  { 
+                      "$group": {
+                          _id : "$top_id",
+                          status: { "$first": "$status" },
+                          category: { "$first": "$slug" },
+                          top_deals: { $push: "$$ROOT"}
+                      }
+                  },
+                  {
+                      $project: { 
+                      "top_deals.top_id":0,
+                      "top_deals.status":0,
+                      "top_deals.slug":0,
+                      "top_deals.index":0,
+                      "_id":0
+                     
+                      }
+                  },
                 
         ])
         .exec((err, result) => {
@@ -204,55 +313,86 @@ router.get('/',async(req,res)=>{
 router.post('/create/:viewtypeId',upload.any(),verify,async(req,res)=>{
 
 
-
-    var top_deal ={}
-    if(req.params.viewtypeId == 0){
-     
-        top_deal= new MoveBanners({
-            move_banner: [],
-            view_type: req.params.viewtypeId
-        })
-    }else if(req.params.viewtypeId == 1){
-        top_deal= new AdBanner({
-            background: req.body.background,
-            strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
-            view_type: req.params.viewtypeId
-        })
-    }else if(req.params.viewtypeId == 2){
-     
-        top_deal= new GridViews({
-            layout_background: req.body.layout_background,
-            title_background:req.body.title_background,
-            grid_view: [],
-            view_type: req.params.viewtypeId
-        })
-
-    }else if(req.params.viewtypeId == 3){
-        top_deal= new HorisontalViews({
-            layout_background: req.body.layout_background,
-            title_background:req.body.title_background,
-            view_type: req.params.viewtypeId
-            
-        })
-    }else{
-        res.status(400).json("Input View Type Salah")
-    }
-
-
-
     try {
-        const addTopDeal =  await Category.findOneAndUpdate(
+        const maxindex = await Category.aggregate(
+        [  
+            {$unwind : "$top_deals"},
             {
-                slug :  req.params.slugCategory
+                "$match": {
+                    "slug": req.params.slugCategory
+                }
             },
-            { $push: { top_deals: top_deal } }
-            ,
-            { upsert: true, new: true }
-        );
-        res.status(200).json(addTopDeal)
+            {
+                "$group" : {
+                    "_id" : "$_id",
+                    "maxindex" : {"$max" : "$top_deals.index"}
+                }
+            }
+        ]) .exec(async(err, result) => {
+            if (err) throw res.status(400).json({message: err})
+            
+        
+
+            var maxindex = result[0].maxindex+1
+
+             var top_deal ={}
+            if(req.params.viewtypeId == 0){
+            
+                top_deal= new MoveBanners({
+                    move_banner: [],
+                    view_type: req.params.viewtypeId,
+                    index :maxindex
+                })
+            }else if(req.params.viewtypeId == 1){
+                top_deal= new AdBanner({
+                    background: req.body.background,
+                    strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
+                    view_type: req.params.viewtypeId,
+                    index :maxindex
+                })
+            }else if(req.params.viewtypeId == 2){
+            
+                top_deal= new GridViews({
+                    layout_background: req.body.layout_background,
+                    title_background:req.body.title_background,
+                    grid_view: [],
+                    view_type: req.params.viewtypeId,
+                    index :maxindex
+                })
+
+            }else if(req.params.viewtypeId == 3){
+                top_deal= new HorisontalViews({
+                    layout_background: req.body.layout_background,
+                    title_background:req.body.title_background,
+                    view_type: req.params.viewtypeId,
+                    index :maxindex   
+                })
+            }else{
+                res.status(400).json("Input View Type Salah")
+            }
+
+
+
+            try {
+                const addTopDeal =  await Category.findOneAndUpdate(
+                    {
+                        slug :  req.params.slugCategory
+                    },
+                    { $push: { top_deals: top_deal } }
+                    ,
+                    { upsert: true, new: true }
+                );
+                res.status(200).json(addTopDeal)
+            } catch (error) {
+                res.status(400).json({message: error})
+            }
+        });
+       
     } catch (error) {
         res.status(400).json({message: error})
     }
+
+   
 
    
 
@@ -306,6 +446,7 @@ router.get('/:topdealId',async(req,res)=>{
                    "grid_view_info._id": 1,
                     "grid_view_info.image": 1,
                     "grid_view_info.title_product":1,
+                    "grid_view_info.cutted_price":1,
                     "grid_view_info.price":1,
                     "grid_view_info.incharge":1,
                     "horisontal_view._id": 1,
@@ -368,6 +509,7 @@ router.get('/:topdealId',async(req,res)=>{
                           "product_ID": "$grid_view_info._id",
                           "title_product": "$grid_view_info.title_product",
                           "price": "$grid_view_info.price",
+                          "cutted_price": "$grid_view_info.cutted_price",
                           "image": "$grid_view_info.image",
                         },"$$REMOVE"]
                 }},
@@ -378,6 +520,7 @@ router.get('/:topdealId',async(req,res)=>{
                           "product_ID": "$horisontal_view_info._id",
                           "title_product": "$horisontal_view_info.title_product",
                           "price": "$horisontal_view_info.price",
+                          "cutted_price": "$horisontal_view_info.cutted_price",
                           "image": "$horisontal_view_info.image",
                         },"$$REMOVE"]
                 }},
@@ -397,6 +540,7 @@ router.get('/:topdealId',async(req,res)=>{
                           "product_ID":"$$g.product_ID",
                           "title_product":"$$g.title_product",
                           "price":"$$g.price",
+                          "cutted_price": "$g.cutted_price",
                           "image": {'$arrayElemAt': ['$$g.image', 0] } 
                         }
                       }
@@ -535,43 +679,106 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
     ])
     .exec(async(err, result) => {
         if (err) throw res.status(400).json("Id tidak diketahui");
+        var index = result[0].index
         if(req.files[0]!=undefined){
             if (result[0].view_type == 1){
                 fs.unlinkSync('./public/'+result[0].strip_ad_banner)
             }
         }
-    });
 
-    var top_deals ={}
-    if(req.params.viewtypeId == 0){
-       
+         var top_deals ={}
+        if(req.params.viewtypeId == 0){
+        
 
-        top_deals= new MoveBanners({
-            move_banner: [],
-            view_type: req.params.viewtypeId
-        })
-        try {
+            top_deals= new MoveBanners({
+                move_banner: [],
+                view_type: req.params.viewtypeId,
+                index:index
+            })
+            try {
 
 
 
-            const updateTopDeal =    await  Category.updateOne({
-                    slug : req.params.slugCategory,
-                    'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
-                  }, { $set: { 'top_deals.$': top_deals }})
-                  .exec();
-                res.status(200).json(updateTopDeal)
+                const updateTopDeal =    await  Category.updateOne({
+                        slug : req.params.slugCategory,
+                        'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                    }, { $set: { 'top_deals.$': top_deals }})
+                    .exec();
+                    res.status(200).json(updateTopDeal)
+                
+            } catch (error) {
+                res.status(400).json({message: error})
+            }
+        }else if(req.params.viewtypeId == 1){
+
+            if(req.files[0]!=undefined){
             
-        } catch (error) {
-            res.status(400).json({message: error})
-        }
-    }else if(req.params.viewtypeId == 1){
+                top_deals= new AdBanner({
+                    background: req.body.background,
+                    strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
+                    view_type: req.params.viewtypeId,
+                    index:index
+                })
+                try {
 
-        if(req.files[0]!=undefined){
-         
-            top_deals= new AdBanner({
-                background: req.body.background,
-                strip_ad_banner:"assets/uploads/topdeals/"+req.files[0].filename,
-                view_type: req.params.viewtypeId
+
+
+                    const updateTopDeal =    await  Category.updateOne({
+                            slug : req.params.slugCategory,
+                            'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                        }, { $set: { 'top_deals.$': top_deals }})
+                        .exec();
+                        res.status(200).json(updateTopDeal)
+                    
+                } catch (error) {
+                    res.status(400).json({message: error})
+                }
+            }else{
+                try {
+
+
+
+                    const updateTopDeal =    await  Category.updateOne({
+                            slug : req.params.slugCategory,
+                            'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                        }, { $set: { 'top_deals.$.background': req.body.background }})
+                        .exec();
+                        res.status(200).json(updateTopDeal)
+                    
+                } catch (error) {
+                    res.status(400).json({message: error})
+                }
+            }
+        }else if(req.params.viewtypeId == 2){
+        
+            top_deals= new GridViews({
+                layout_background: req.body.layout_background,
+                title_background:req.body.title_background,
+                grid_view: [],
+                view_type: req.params.viewtypeId,
+                index:index
+            })
+            try {
+
+
+
+                const updateTopDeal =    await  Category.updateOne({
+                        slug : req.params.slugCategory,
+                        'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
+                    }, { $set: { 'top_deals.$': top_deals }})
+                    .exec();
+                    res.status(200).json(updateTopDeal)
+                
+            } catch (error) {
+                res.status(400).json({message: error})
+            }
+        }else if(req.params.viewtypeId == 3){
+            top_deals= new HorisontalViews({
+                layout_background: req.body.layout_background,
+                title_background:req.body.title_background,
+                view_type: req.params.viewtypeId,
+                index:index
+                
             })
             try {
 
@@ -588,72 +795,11 @@ router.patch('/:topdealId/update/:viewtypeId',upload.any(),verify,async(req,res)
                 res.status(400).json({message: error})
             }
         }else{
-            try {
-
-
-
-                const updateTopDeal =    await  Category.updateOne({
-                        slug : req.params.slugCategory,
-                        'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
-                    }, { $set: { 'top_deals.$.background': req.body.background }})
-                    .exec();
-                    res.status(200).json(updateTopDeal)
-                
-            } catch (error) {
-                res.status(400).json({message: error})
-            }
+            res.status(400).json("Input View Type Salah")
         }
-    }else if(req.params.viewtypeId == 2){
-    
-        top_deals= new GridViews({
-            layout_background: req.body.layout_background,
-            title_background:req.body.title_background,
-            grid_view: [],
-            view_type: req.params.viewtypeId
-        })
-        try {
+      
+    });
 
-
-
-            const updateTopDeal =    await  Category.updateOne({
-                    slug : req.params.slugCategory,
-                    'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
-                  }, { $set: { 'top_deals.$': top_deals }})
-                  .exec();
-                res.status(200).json(updateTopDeal)
-            
-        } catch (error) {
-            res.status(400).json({message: error})
-        }
-    }else if(req.params.viewtypeId == 3){
-        top_deals= new HorisontalViews({
-            layout_background: req.body.layout_background,
-            title_background:req.body.title_background,
-            view_type: req.params.viewtypeId
-            
-        })
-        try {
-
-
-
-            const updateTopDeal =    await  Category.updateOne({
-                    slug : req.params.slugCategory,
-                    'top_deals._id': mongoose.Types.ObjectId(req.params.topdealId)
-                  }, { $set: { 'top_deals.$': top_deals }})
-                  .exec();
-                res.status(200).json(updateTopDeal)
-            
-        } catch (error) {
-            res.status(400).json({message: error})
-        }
-    }else{
-        res.status(400).json("Input View Type Salah")
-    }
-
-
-   
-
-   
     
 })
 
