@@ -554,7 +554,7 @@ router.patch('/info/delete/update/:userId',verify,async(req,res)=>{
 
 router.use('/:userId/myaddresses',Address)
 router.use('/:userId/mycarts',Cart)
-router.use('/:userId/mywishlist',Wishlist)
+router.use('/:userId/mywishlists',Wishlist)
 router.use('/:userId/myratings',Rating)
 router.use('/:userId/mynotifications',Notification)
 router.use('/:userId/mynota',Nota)

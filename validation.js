@@ -4,7 +4,7 @@ var split = require('string-split');
 const isHex = (h) =>{
     var re = /[0-9A-Fa-f]{6}/g;
   
-    return (!re.test(h)&&h.length!=24)
+    return (!re.test(h)&& h.length!=24)
 }
 
 

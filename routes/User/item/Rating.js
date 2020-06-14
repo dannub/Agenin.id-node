@@ -38,7 +38,7 @@ router.get('/',verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result)
+            res.status(200).json(result[0])
         });
         //res.status(200).json(topdeals[0].top_deals)
    

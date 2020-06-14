@@ -15,6 +15,7 @@ const {isHex} = require('../../../validation')
 
 //GET ALL Wishlist
 router.get('/',verify,async(req,res)=>{
+   
 
     try {
         //All Wishlist
@@ -62,7 +63,7 @@ router.get('/',verify,async(req,res)=>{
                         "in": {
                             "_id": '$$w._id',
                             "product_ID": {'$arrayElemAt': ['$$w.product._id', 0] } ,
-                            "in_stock": {'$arrayElemAt': ['$$c.product.in_stock', 0] } ,
+                            "in_stock": {'$arrayElemAt': ['$$w.product.in_stock', 0] } ,
                             "title_product": {'$arrayElemAt': ['$$w.product.title_product', 0] },
                             "price":  {'$arrayElemAt': ["$$w.product.price", 0] } ,
                             "cutted_price":  {'$arrayElemAt': ["$$w.product.cutted_price", 0] }  ,
@@ -78,7 +79,7 @@ router.get('/',verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result)
+            res.status(200).json(result[0])
         });
         //res.status(200).json(topdeals[0].top_deals)
    
@@ -142,33 +143,7 @@ router.get('/count',verify,async(req,res)=>{
 })
 
 
-//SUBMITS A Wishlist
-router.post('/create',verify,async(req,res)=>{
 
-
-
-    var  wishlist= new Wishlist({
-        product_ID: req.body.product_ID
-        })
-
-
-
-    try {
-        const addWishlist =  await User.findOneAndUpdate(
-            {
-                 _id : req.params.userId 
-            },
-            { $push: { my_wishlists: wishlist } }
-            ,
-            { upsert: true, new: true }
-        );
-        res.status(200).json(addWishlist)
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
-
-   
-})
 
 
 
@@ -245,7 +220,7 @@ router.post('/create/:productId',verify,async(req,res,next)=>{
 //SPECIFIC Wishlist
 router.get('/:wishlistId', verify,async(req,res)=>{
 
-    const {error} = isHex(req.params.wishlistID)
+    const {error} = isHex(req.params.wishlistId)
     if(error) {
         return res.status(400).send("Wishlist id Salah");
     }
@@ -260,7 +235,7 @@ router.get('/:wishlistId', verify,async(req,res)=>{
             {
                 $match: { 
                     _id : mongoose.Types.ObjectId(req.params.userId),
-                    "my_wishlists._id" : mongoose.Types.ObjectId(req.params.wishlistID),
+                    "my_wishlists._id" : mongoose.Types.ObjectId(req.params.wishlistId),
                 }
               },
             { $replaceRoot: { newRoot:"$my_wishlists"}},
@@ -288,7 +263,7 @@ router.get('/:wishlistId', verify,async(req,res)=>{
                 "$group": {
                     _id : "$_id",
                     product_ID:{ "$first": {'$arrayElemAt': ['$product._id', 0] } },
-                    in_stock: {'$arrayElemAt': ['$$c.product.in_stock', 0] } ,
+                    in_stock: {"$first":{'$arrayElemAt': ['$product.in_stock', 0]} } ,
                     title_product: { "$first": {'$arrayElemAt': ['$product.title_product', 0] }},
                     price: { "$first":  {'$arrayElemAt': ["$product.price", 0] } },
                     cutted_price: { "$first": {'$arrayElemAt': ["$product.cutted_price", 0] }  },
@@ -299,7 +274,7 @@ router.get('/:wishlistId', verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result)
+            res.status(200).json(result[0])
         });
        
     } catch (error) {
