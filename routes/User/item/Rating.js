@@ -131,7 +131,7 @@ router.post('/create/:productId/:rating',verify,async(req,res,next)=>{
                const updateRating = await  User.updateOne({
                     _id : mongoose.Types.ObjectId(req.params.userId),
                     "my_ratings.product_ID" : req.params.productId 
-                      }, { $set: { 'my_ratings.$.rating': req.params.rating  }})
+                      }, { $set: { 'my_ratings.$.rating': parseInt(req.params.rating)  }})
                       .exec(async(err, result) => {
                         if(err){
                             console.log("Something wrong when updating data!");
@@ -519,7 +519,7 @@ router.post('/create/:productId/:rating',verify,async(req,res,next)=>{
                                                 average_rating:average_rating,
                                                 total_ratings:result[0].total_ratings+1  }})
                                           .exec(async(err, result) => {      
-                                                console.log(average_rating)      
+                                              
                                                 res.status(200).json(result)
                                           })
                                 })
