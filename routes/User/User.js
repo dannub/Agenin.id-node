@@ -182,7 +182,13 @@ router.post('/login/', async (req, res,next) => {
 
 
         //Checking if the email exixsts
-        var user = await User.findOne({email: req.body.email,role:"user"})
+        var user = await User.findOneAndUpdate({email: req.body.email,role:"user"}, {$set:{lastseen:new Date()}}, {new: true}, (err, doc) => {
+            if (err) {
+                console.log("Something wrong when updating data!");
+            }
+        
+            console.log(doc);
+        });
         if(!user) return res.status(400).send('Email is not found');
 
         //Password is correct
@@ -214,7 +220,13 @@ router.post('/login/', async (req, res,next) => {
 
 
         //Checking if the email exixsts
-        var user = await User.findOne({email: req.body.email,role:"admin"})
+        var user = await User.findOneAndUpdate({email: req.body.email,role:"admin"}, {$set:{lastseen:new Date()}}, {new: true}, (err, doc) => {
+            if (err) {
+                console.log("Something wrong when updating data!");
+            }
+        
+            console.log(doc);
+        });
         if(!user) return res.status(400).send('Email is not found');
 
         //Password is correct
