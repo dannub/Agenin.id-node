@@ -40,7 +40,7 @@ router.get('/',verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image.path', 0] },price:1,in_stock:1,cutted_price:1,satuan:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },total_ratings:1,tags:1,average_rating:1,price:1,in_stock:1,cutted_price:1,satuan:1 } }
                         ],
                         as: "product"
                     }
@@ -64,6 +64,9 @@ router.get('/',verify,async(req,res)=>{
                             "_id": '$$w._id',
                             "product_ID": {'$arrayElemAt': ['$$w.product._id', 0] } ,
                             "in_stock": {'$arrayElemAt': ['$$w.product.in_stock', 0] } ,
+                            "total_ratings": {'$arrayElemAt': ['$$w.product.total_ratings', 0] } ,
+                            "tags": {'$arrayElemAt': ['$$w.product.tags', 0] } ,
+                            "average_rating": {'$arrayElemAt': ['$$w.product.average_rating', 0] } ,
                             "title_product": {'$arrayElemAt': ['$$w.product.title_product', 0] },
                             "price":  {'$arrayElemAt': ["$$w.product.price", 0] } ,
                             "cutted_price":  {'$arrayElemAt': ["$$w.product.cutted_price", 0] }  ,
