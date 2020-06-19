@@ -1,5 +1,6 @@
 const router = require('express').Router({mergeParams: true})
 const verify = require('../../User/verifytoken')
+const ObjectID = require('mongodb').ObjectID;
 
 
 const mongoose = require('mongoose');
@@ -25,7 +26,6 @@ router.get('/',verify,async(req,res)=>{
               },
              
             { $replaceRoot: { newRoot: { $mergeObjects: [ { user_id: "$_id"},"$my_carts" ] }}},
-            { $project: {   date:0} },
             {
                 $lookup:
                     {
@@ -260,7 +260,6 @@ router.get('/:cartId', verify,async(req,res)=>{
                 }
               },
             { $replaceRoot: { newRoot:"$my_carts"}},
-            { $project: {   date:0} },
             {
                 $lookup:
                     {
@@ -274,7 +273,7 @@ router.get('/:cartId', verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },in_stock:1,price:1,cutted_price:1,satuan:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1 } }
                         ],
                         as: "product"
                     }
@@ -288,6 +287,8 @@ router.get('/:cartId', verify,async(req,res)=>{
                     title_product: { "$first": {'$arrayElemAt': ['$product.title_product', 0] }},
                     price: { "$first":  {'$arrayElemAt': ["$product.price", 0] } },
                     cutted_price: { "$first": {'$arrayElemAt': ["$product.cutted_price", 0] }  },
+                    average_rating: { "$first": {'$arrayElemAt': ["$product.average_rating", 0] }  },
+                    berat: { "$first": {'$arrayElemAt': ["$product.berat", 0] }  },
                     satuan: { "$first": {'$arrayElemAt': ["$product.satuan", 0] }  },
                     image: { "$first": {'$arrayElemAt': ["$product.image", 0] } },
                 }
@@ -295,7 +296,7 @@ router.get('/:cartId', verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result)
+            res.status(200).json(result[0])
         });
         //res.status(200).json(topdeals[0].top_deals)
    
@@ -410,7 +411,7 @@ router.patch('/update/:productId',verify,async(req,res)=>{
                                     
                                    }
                                 },
-                                { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },in_stock:1,price:1,cutted_price:1,satuan:1,berat:1 } }
+                                { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1 } }
                             ],
                             as: "product"
                         }
@@ -438,6 +439,7 @@ router.patch('/update/:productId',verify,async(req,res)=>{
                                     "title_product": {'$arrayElemAt': ['$$c.product.title_product', 0] },
                                     "price":  {'$arrayElemAt': ["$$c.product.price", 0] } ,
                                     "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
+                                    "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] }  ,
                                     "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
                                     "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
                                     "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
@@ -472,6 +474,122 @@ router.patch('/update/:productId',verify,async(req,res)=>{
 
 //get count cart
 
+
+//Update a cart
+router.patch('/update/',verify,async(req,res)=>{
+
+   
+  
+
+  
+    var carts = Array.prototype.slice.call(req.body.carts);
+
+    var i = 0
+    carts.forEach(function (cart) {
+        var newObjectId = new ObjectID.createFromHexString(cart._id)
+        var myDate = new Date();
+
+
+        carts[i]._id= newObjectId 
+        carts[i].date= myDate 
+       
+        i++
+      });
+
+      try{
+
+        await  User.updateOne({
+            _id : req.params.userId
+              }, { $set: { 'my_carts': req.body.carts }})
+              .exec(async(err, result) => {
+                if (err) throw res.status(400).json({message: err});
+                try{
+                    await User.aggregate([
+                      {"$unwind":"$my_carts"}, 
+                      {
+                          $match: { _id : mongoose.Types.ObjectId(req.params.userId) }
+                        },
+                       
+                      { $replaceRoot: { newRoot: { $mergeObjects: [ { user_id: "$_id"},"$my_carts" ] }}},
+                      { $project: {   date:0} },
+                      {
+                          $lookup:
+                              {
+                                  from: "products",
+                                  let: { product_ID: "$product_ID"},
+                                  pipeline: [
+                                      { $match:
+                                         { 
+                                              $expr:
+                                                 { $eq: [ "$incharge",  "$$product_ID" ] }
+                                          
+                                         }
+                                      },
+                                      { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1  } }
+                                  ],
+                                  as: "product"
+                              }
+                      },
+                      { $project: {  product_ID: 0} },
+                          { 
+                              "$group": {
+                                  _id : "$user_id",
+                                  user_id: { "$first": "$user_id" },
+                                  carts: { $push: "$$ROOT"},
+                              }
+                          },
+                          {
+                              "$addFields": {
+                                  "carts":   { $cond : [ { $eq : [ "$carts", [] ] },"$$REMOVE", 
+                                   {
+                                    "$map": {
+                                      "input": "$carts",
+                                      "as": "c",
+                                      "in": {
+                                          "_id": '$$c._id',
+                                          "product_ID": {'$arrayElemAt': ['$$c.product._id', 0] } ,
+                                          "in_stock":{'$arrayElemAt': ['$$c.product.in_stock', 0] },
+                                          "jumlah": '$$c.jumlah',
+                                          "title_product": {'$arrayElemAt': ['$$c.product.title_product', 0] },
+                                          "price":  {'$arrayElemAt': ["$$c.product.price", 0] } ,
+                                          "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
+                                          "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] }  ,
+                                          "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
+                                          "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
+                                          "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
+                                      
+                                      }
+                                    }
+                                  } ]}
+                              }
+                          },
+                          { $project: {  _id: 0} }
+          
+          
+                  ])
+                  .exec((err, result) => {
+                      if (err) throw res.status(400).json({message: err});
+                      res.status(200).json(result[0])
+                  });
+                  //res.status(200).json(topdeals[0].top_deals)
+             
+              } catch (error) {
+                  res.status(400).json({message: error})
+              }
+            });
+        
+        //    // res.status(200).json(updateCart)
+      } catch (error) {
+        res.status(400).json({message: error})
+     }
+
+        
+   
+   
+    
+})
+
+//get count cart
 
 
 module.exports = router
