@@ -39,7 +39,7 @@ router.get('/',verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,berat:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1 } }
                         ],
                         as: "product"
                     }
@@ -69,6 +69,7 @@ router.get('/',verify,async(req,res)=>{
                                 "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
                                 "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
                                 "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
+                                "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] },
                                 "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
                             
                             }
@@ -82,7 +83,7 @@ router.get('/',verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result)
+            res.status(200).json(result[0])
         });
         //res.status(200).json(topdeals[0].top_deals)
    

@@ -9,6 +9,11 @@ const cors = require('cors')
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+var contentDisposition = require('content-disposition')
+var finalhandler = require('finalhandler')
+var http = require('http')
+var serveStatic = require('serve-static')
+
 io.set('origins', '*:*');
 
 
@@ -59,6 +64,25 @@ const productRoute = require('./routes/Product/Product')
 const videoRoute = require('./routes/Video/Video')
 
 //dotenv.config();
+
+
+//serve static
+// Serve up public/ftp folder
+var serve = serveStatic('public/assets/uploads', {
+  'index': false,
+  'setHeaders': setHeaders
+})
+
+// Set header to force download
+function setHeaders (res, path) {
+  res.setHeader('Content-Disposition', contentDisposition(path))
+}
+
+// Create server
+var server = http.createServer(function onRequest (req, res) {
+  serve(req, res, finalhandler(req, res))
+})
+
 
 
 //Middlewares

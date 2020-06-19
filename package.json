@@ -24,6 +24,7 @@
     "mongoose-double": "0.0.1",
     "mongoose-slug-generator": "^1.0.4",
     "multer": "^1.4.2",
+    "serve-static": "^1.14.1",
     "slugify": "^1.4.0",
     "socket.io": "^2.3.0",
     "string-split": "^0.3.1"
