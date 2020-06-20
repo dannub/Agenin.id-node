@@ -55,7 +55,7 @@ router.get('/',async(req,res)=>{
 router.post('/create',upload.fields([
     {
     name: 'image'
-  }]),verify,async(req,res)=>{
+  }]),verify,async(req,res,next)=>{
 
     
     const video = new Video({
@@ -66,6 +66,7 @@ router.post('/create',upload.fields([
 
     try {
         const savedVideo = await video.save();
+        next()
         res.status(200).json(savedVideo)
        
     } catch (error) {
@@ -87,7 +88,7 @@ router.get('/:videoId',async(req,res)=>{
 })
 
 //DeleteProduct
-router.delete('/delete/:videoId',verify,async(req,res)=>{
+router.delete('/delete/:videoId',verify,async(req,res,next)=>{
 
     try {
        
@@ -100,6 +101,7 @@ router.delete('/delete/:videoId',verify,async(req,res)=>{
   
                 //file removed
                 const removedVideo =await Video.deleteOne({_id: mongoose.Types.ObjectId(req.params.videoId)})
+                next()
                 res.status(200).json(removedVideo)
               } catch(err) {
                 console.error(err)
@@ -118,7 +120,7 @@ router.delete('/delete/:videoId',verify,async(req,res)=>{
 router.patch('/update/:videoId',upload.fields([
     {
     name: 'image'
-  }]),verify,async(req,res)=>{
+  }]),verify,async(req,res,next)=>{
 
         if(req.files.image!=undefined){
             
@@ -154,6 +156,7 @@ router.patch('/update/:videoId',upload.fields([
                         videoId: req.body.videoId
                     }}
                 )   
+                next()
                 res.status(200).json(updatedVideo)
             } catch(err) {
                 console.error(err)
