@@ -347,7 +347,7 @@ router.delete('/delete/:cartId',verify,async(req,res,next)=>{
  })
 
 //Update a cart
-router.patch('/update/:productId',verify,async(req,res)=>{
+router.patch('/update/:productId',verify,async(req,res,next)=>{
 
     const {error} = isHex(req.params.productId)
     if(error) return res.status(400).send("Product id Salah");
@@ -456,6 +456,7 @@ router.patch('/update/:productId',verify,async(req,res)=>{
             .exec((err, result) => {
                 if (err) throw res.status(400).json({message: err});
                 res.status(200).json(result)
+                next()
             });
             //res.status(200).json(topdeals[0].top_deals)
        
@@ -476,7 +477,7 @@ router.patch('/update/:productId',verify,async(req,res)=>{
 
 
 //Update a cart
-router.patch('/update/',verify,async(req,res)=>{
+router.patch('/update/',verify,async(req,res,next)=>{
 
    
   
@@ -503,7 +504,7 @@ router.patch('/update/',verify,async(req,res)=>{
               }, { $set: { 'my_carts': req.body.carts }})
               .exec(async(err, result) => {
                 if (err) throw res.status(400).json({message: err});
-                try{
+                
                     await User.aggregate([
                       {"$unwind":"$my_carts"}, 
                       {
@@ -573,9 +574,6 @@ router.patch('/update/',verify,async(req,res)=>{
                   });
                   //res.status(200).json(topdeals[0].top_deals)
              
-              } catch (error) {
-                  res.status(400).json({message: error})
-              }
             });
         
         //    // res.status(200).json(updateCart)
