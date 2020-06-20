@@ -14,7 +14,7 @@ const {isHex} = require('../../../validation')
 
 
 //GET ALL Cart
-router.get('/',verify,async(req,res,next)=>{
+router.get('/',verify,async(req,res)=>{
 
     try {
         //All Cart
@@ -83,7 +83,6 @@ router.get('/',verify,async(req,res,next)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            next()
             res.status(200).json(result[0])
         });
         //res.status(200).json(topdeals[0].top_deals)
