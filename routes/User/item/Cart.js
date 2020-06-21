@@ -541,7 +541,7 @@ router.patch('/update/',verify,async(req,res,next)=>{
                                           
                                          }
                                       },
-                                      { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1  } }
+                                      { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,min_order:1,average_rating:1,berat:1  } }
                                   ],
                                   as: "product"
                               }
@@ -571,6 +571,7 @@ router.patch('/update/',verify,async(req,res,next)=>{
                                           "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
                                           "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] }  ,
                                           "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
+                                          "min_order":  {'$arrayElemAt': ["$$c.product.min_order", 0] },
                                           "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
                                           "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
                                       
