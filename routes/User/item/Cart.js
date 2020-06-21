@@ -52,32 +52,32 @@ router.get('/',verify,async(req,res)=>{
                         carts: { $push: "$$ROOT"},
                     }
                 },
-                {
-                    "$addFields": {
-                        "carts":   { $cond : [ { $eq : [ "$carts", [] ] },"$$REMOVE", 
-                         {
-                          "$map": {
-                            "input": "$carts",
-                            "as": "c",
-                            "in": {
-                                "_id": '$$c._id',
-                                "product_ID": {'$arrayElemAt': ['$$c.product._id', 0] } ,
-                                "in_stock": {'$arrayElemAt': ['$$c.product.in_stock', 0] } ,
-                                "jumlah": '$$c.jumlah' ,
-                                "title_product": {'$arrayElemAt': ['$$c.product.title_product', 0] },
-                                "price":  {'$arrayElemAt': ["$$c.product.price", 0] } ,
-                                "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
-                                "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
-                                "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
-                                "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] },
-                                "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
+                // {
+                //     "$addFields": {
+                //         "carts":   { $cond : [ { $eq : [ "$carts", [] ] },"$$REMOVE", 
+                //          {
+                //           "$map": {
+                //             "input": "$carts",
+                //             "as": "c",
+                //             "in": {
+                //                 "_id": '$$c._id',
+                //                 "product_ID": {'$arrayElemAt': ['$$c.product._id', 0] } ,
+                //                 "in_stock": {'$arrayElemAt': ['$$c.product.in_stock', 0] } ,
+                //                 "jumlah": '$$c.jumlah' ,
+                //                 "title_product": {'$arrayElemAt': ['$$c.product.title_product', 0] },
+                //                 "price":  {'$arrayElemAt': ["$$c.product.price", 0] } ,
+                //                 "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
+                //                 "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
+                //                 "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
+                //                 "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] },
+                //                 "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
                             
-                            }
-                          }
-                        } ]}
-                    }
-                },
-                { $project: {  _id: 0} }
+                //             }
+                //           }
+                //         } ]}
+                //     }
+                // },
+                // { $project: {  _id: 0} }
 
 
         ])
