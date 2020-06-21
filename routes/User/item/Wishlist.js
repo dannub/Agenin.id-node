@@ -82,7 +82,11 @@ router.get('/',verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result[0])
+            if(result[0]==undefined||result[0]==null){
+                res.status(200).json({wishlist : []})
+            }else{
+                res.status(200).json(result[0])
+            }
         });
         //res.status(200).json(topdeals[0].top_deals)
    
