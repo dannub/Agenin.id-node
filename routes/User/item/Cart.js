@@ -84,7 +84,12 @@ router.get('/',verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result[0])
+            if(result[0]==undefined||result[0]==null){
+                res.status(200).json({carts : []})
+            }else{
+                res.status(200).json(result[0])
+            }
+            
         });
         //res.status(200).json(topdeals[0].top_deals)
    
@@ -358,7 +363,11 @@ router.get('/:cartId', verify,async(req,res)=>{
         ])
         .exec((err, result) => {
             if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result[0])
+            if(result[0]==undefined||result[0]==null){
+                res.status(200).json({carts : []})
+            }else{
+                res.status(200).json(result[0])
+            }
         });
         //res.status(200).json(topdeals[0].top_deals)
    
@@ -463,7 +472,11 @@ router.delete('/delete/:cartId',verify,async(req,res,next)=>{
               ])
               .exec((err, result) => {
                   if (err) throw res.status(400).json({message: err});
-                  res.status(200).json(result[0])
+                  if(result[0]==undefined||result[0]==null){
+                    res.status(200).json({carts : []})
+                }else{
+                    res.status(200).json(result[0])
+                }
               });
               //res.status(200).json(topdeals[0].top_deals)
          
@@ -589,7 +602,11 @@ router.patch('/update/:productId',verify,async(req,res,next)=>{
             ])
             .exec((err, result) => {
                 if (err) throw res.status(400).json({message: err});
-                res.status(200).json(result)
+                if(result[0]==undefined||result[0]==null){
+                    res.status(200).json({carts : []})
+                }else{
+                    res.status(200).json(result[0])
+                }
                 next()
             });
             //res.status(200).json(topdeals[0].top_deals)
@@ -705,7 +722,11 @@ router.patch('/update/',verify,async(req,res,next)=>{
                   ])
                   .exec((err, result) => {
                       if (err) throw res.status(400).json({message: err});
-                      res.status(200).json(result[0])
+                      if(result[0]==undefined||result[0]==null){
+                        res.status(200).json({carts : []})
+                    }else{
+                        res.status(200).json(result[0])
+                    }
                   });
                   //res.status(200).json(topdeals[0].top_deals)
              
