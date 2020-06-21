@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const Cart = require('../../../model/User/item/Cart')
 
-
+const Products = require('../../../model/Product/Product')
 const User = require('../../../model/User/User')
 
 const {isHex} = require('../../../validation')
@@ -39,7 +39,7 @@ router.get('/',verify,async(req,res)=>{
                                 
                                }
                             },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1 } }
+                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,min_order:1,berat:1 } }
                         ],
                         as: "product"
                     }
@@ -68,6 +68,7 @@ router.get('/',verify,async(req,res)=>{
                                 "price":  {'$arrayElemAt': ["$$c.product.price", 0] } ,
                                 "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
                                 "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
+                                "min_order":  {'$arrayElemAt': ["$$c.product.min_order", 0] },
                                 "berat":  {'$arrayElemAt': ["$$c.product.berat", 0] },
                                 "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] },
                                 "image":  {'$arrayElemAt': ["$$c.product.image", 0] } ,
@@ -183,55 +184,67 @@ router.post('/create/:productId',verify,async(req,res)=>{
     const {error} = isHex(req.params.productId)
     if(error) return res.status(400).send("Product id Salah");
 
-    //Check id is exist
-    try {
-        // Wishlist
-
-        await User.aggregate([
-            {"$unwind":"$my_carts"}, 
-            {
-                $match: { 
-                    _id : mongoose.Types.ObjectId(req.params.userId),
-                    "my_carts.product_ID" : req.params.productId,
-                }
-              },
-            { $replaceRoot: { newRoot:"$my_carts"}},
-        ])
+   
+        await Products.findById(req.params.productId) 
         .exec(async(err, result) => {
-            if (err) throw res.status(400).json({message: err});
-            if(result.length!=0){             
-                res.status(200).json("Barang Sudah di Keranjang")
-                
-            }else{
+        
 
-                var  cart= new Cart({
-                    product_ID: req.params.productId,
-                    jumlah: 1
-                    })
-            
-            
-            
-                try {
-                    const addCart =  await User.findOneAndUpdate(
-                        {
-                             _id : req.params.userId 
-                        },
-                        { $push: { my_carts: cart } }
-                        ,
-                        { upsert: true, new: true }
-                    );
-                    res.status(200).json(addCart)
-                } catch (error) {
-                    res.status(400).json({message: error})
-                }
+            var minOrder =result.min_order;
+            // //Check id is exist
+            try {
+                // Wishlist
 
-              
+
+                await User.aggregate([
+                    {"$unwind":"$my_carts"}, 
+                    {
+                        $match: { 
+                            _id : mongoose.Types.ObjectId(req.params.userId),
+                            "my_carts.product_ID" : req.params.productId,
+                        }
+                    },
+                    { $replaceRoot: { newRoot:"$my_carts"}},
+                ])
+                .exec(async(err, result) => {
+                    if (err) throw res.status(400).json({message: err});
+                    if(result.length!=0){             
+                        res.status(200).json("Barang Sudah di Keranjang")
+                        
+                    }else{
+
+                        var  cart= new Cart({
+                            product_ID: req.params.productId,
+                            jumlah: minOrder
+                            })
+                    
+                    
+                    
+                        try {
+                            const addCart =  await User.findOneAndUpdate(
+                                {
+                                    _id : req.params.userId 
+                                },
+                                { $push: { my_carts: cart } }
+                                ,
+                                { upsert: true, new: true }
+                            );
+                            res.status(200).json(addCart)
+                        } catch (error) {
+                            res.status(400).json({message: error})
+                        }
+
+                    
+                    }
+                });
+            
+            } catch (error) {
+                res.status(400).json({message: error})
             }
-        });
-       
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+        })
+           
+   
+
+    
 
    
 
@@ -288,6 +301,7 @@ router.get('/:cartId', verify,async(req,res)=>{
                     price: { "$first":  {'$arrayElemAt': ["$product.price", 0] } },
                     cutted_price: { "$first": {'$arrayElemAt': ["$product.cutted_price", 0] }  },
                     average_rating: { "$first": {'$arrayElemAt': ["$product.average_rating", 0] }  },
+                    
                     berat: { "$first": {'$arrayElemAt': ["$product.berat", 0] }  },
                     satuan: { "$first": {'$arrayElemAt': ["$product.satuan", 0] }  },
                     image: { "$first": {'$arrayElemAt': ["$product.image", 0] } },
@@ -411,7 +425,7 @@ router.patch('/update/:productId',verify,async(req,res,next)=>{
                                     
                                    }
                                 },
-                                { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,berat:1 } }
+                                { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,in_stock:1,cutted_price:1,satuan:1,average_rating:1,min_order:1,berat:1 } }
                             ],
                             as: "product"
                         }
@@ -438,6 +452,7 @@ router.patch('/update/:productId',verify,async(req,res,next)=>{
                                     "jumlah": '$$c.product.jumlah',
                                     "title_product": {'$arrayElemAt': ['$$c.product.title_product', 0] },
                                     "price":  {'$arrayElemAt': ["$$c.product.price", 0] } ,
+                                    "min_order":  {'$arrayElemAt': ["$$c.product.min_order", 0] },
                                     "cutted_price":  {'$arrayElemAt': ["$$c.product.cutted_price", 0] }  ,
                                     "average_rating":  {'$arrayElemAt': ["$$c.product.average_rating", 0] }  ,
                                     "satuan":  {'$arrayElemAt': ["$$c.product.satuan", 0] },
