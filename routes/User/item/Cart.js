@@ -95,86 +95,86 @@ router.get('/',verify,async(req,res)=>{
 
 
 //GET count
-router.get('/count',verify,async(req,res)=>{
+// router.get('/count',verify,async(req,res)=>{
 
-    try {
-        //All Cart
+//     try {
+//         //All Cart
 
-        await User.aggregate([
-            {"$unwind":"$my_carts"}, 
-            {
-                $match: { _id : mongoose.Types.ObjectId(req.params.userId) }
-              },
-            { $replaceRoot: { newRoot:"$my_carts"}},
-            { $project: {   date:0} },
-            {
-                $lookup:
-                    {
-                        from: "products",
-                        let: { product_ID: "$product_ID"},
-                        pipeline: [
-                            { $match:
-                               { 
-                                    $expr:
-                                       { $eq: [ "$incharge",  "$$product_ID" ] }
+//         await User.aggregate([
+//             {"$unwind":"$my_carts"}, 
+//             {
+//                 $match: { _id : mongoose.Types.ObjectId(req.params.userId) }
+//               },
+//             { $replaceRoot: { newRoot:"$my_carts"}},
+//             { $project: {   date:0} },
+//             {
+//                 $lookup:
+//                     {
+//                         from: "products",
+//                         let: { product_ID: "$product_ID"},
+//                         pipeline: [
+//                             { $match:
+//                                { 
+//                                     $expr:
+//                                        { $eq: [ "$incharge",  "$$product_ID" ] }
                                 
-                               }
-                            },
-                            { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,cutted_price:1,satuan:1 } }
-                        ],
-                        as: "product"
-                    }
-            },
-            { $project: {  product_ID: 0} },
-            {
-                $group: {
-                   _id: null,
-                   count: { $sum: 1 }
-                }
-              }
+//                                }
+//                             },
+//                             { $project: {  title_product: 1,image : {'$arrayElemAt': ['$image', 0] },price:1,cutted_price:1,satuan:1 } }
+//                         ],
+//                         as: "product"
+//                     }
+//             },
+//             { $project: {  product_ID: 0} },
+//             {
+//                 $group: {
+//                    _id: null,
+//                    count: { $sum: 1 }
+//                 }
+//               }
             
-        ])
-        .exec((err, result) => {
-            if (err) throw res.status(400).json({message: err});
-            res.status(200).json(result[0].count)
-        });
-        //res.status(200).json(topdeals[0].top_deals)
+//         ])
+//         .exec((err, result) => {
+//             if (err) throw res.status(400).json({message: err});
+//             res.status(200).json(result[0].count)
+//         });
+//         //res.status(200).json(topdeals[0].top_deals)
    
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+//     } catch (error) {
+//         res.status(400).json({message: error})
+//     }
 
-})
-
-
-//SUBMITS A Cart
-router.post('/create',verify,async(req,res)=>{
+// })
 
 
-
-    var  cart= new Cart({
-        product_ID: req.body.product_ID,
-        jumlah: req.body.jumlah
-        })
+// //SUBMITS A Cart
+// router.post('/create',verify,async(req,res)=>{
 
 
 
-    try {
-        const addCart =  await User.findOneAndUpdate(
-            {
-                 _id : req.params.userId 
-            },
-            { $push: { my_carts: cart } }
-            ,
-            { upsert: true, new: true }
-        );
-        res.status(200).json(addCart)
-    } catch (error) {
-        res.status(400).json({message: error})
-    }
+//     var  cart= new Cart({
+//         product_ID: req.body.product_ID,
+//         jumlah: req.body.jumlah
+//         })
+
+
+
+//     try {
+//         const addCart =  await User.findOneAndUpdate(
+//             {
+//                  _id : req.params.userId 
+//             },
+//             { $push: { my_carts: cart } }
+//             ,
+//             { upsert: true, new: true }
+//         );
+//         res.status(200).json(addCart)
+//     } catch (error) {
+//         res.status(400).json({message: error})
+//     }
 
    
-})
+// })
 
 //SUBMITS A Cart
 router.post('/create/:productId',verify,async(req,res)=>{
